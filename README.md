@@ -36,3 +36,7 @@ That is all.
 ###Python
 
 set up a Python execution environment in Testing if you need to.
+
+###Pointing and Ports
+
+The API runs on Port `3306`. Use `localhost:3306/api` to access it. It should already be loaded into Python, but 
