@@ -10,6 +10,8 @@ Requires installation of mysql connector: pip install mysql-connector-python
 Based on: https://dev.mysql.com/doc/connector-python/en/connector-python-example-connecting.html
 '''
 
+DEFAULT_TGT_URL= "x" #TODO: What's our freaking directory?
+
 
 def make_get_call(url, data):
     # make get call to url
@@ -63,39 +65,18 @@ def make_delete_call(url):
     print("received: ")
     print(resp.json())
 
+def create_dummy_users(url):
+    resp= requests.put(url+"/users/new", )
+
 def testSequence():
-    # testing get calls
-    print("Making a get (read) call to employees")
-    usr = "lukeskywalker"
-    pwd = "test"
-    data = {"username": usr, "pwd": pwd}
-    print("sending:")
-    print(data)
-    make_get_call('http://localhost:3000/api/employees/', data)
-
-    # usr = "lukeskywalker"
-    # data = {"username": usr, "pwd": pwd}
-    # print("sending:")
-    # print(data)
-    # make_get_call('http://localhost:3000/api/employees/', data)
-
-    # print("\nMaking a get (read) call to a specific restaurant (id=30075445)")
-    # make_get_call('http://localhost:3000/api/employees/1')
-    #
-    # print("\nMaking a post (create) call")
-    # restaurant_data = {{"Auth": {"username" : "", "pwd" : ""}, "EmployeeFirstname": "Bill", "EmployeeLastname": "Heder", "EmployeeUsrname": "billheder"}
-    # make_post_call('http://localhost:3000/api/employees/', restaurant_data)
-
-    # print("\nMaking a put (update) call")
-    # restaurant_data = {"RestaurantName": "This is a new name", "Boro": "Queens"}
-    # make_put_call('http://localhost:3000/api/employees/1', restaurant_data)
-    #
-    # print("\nMaking a delete call to employees")
-    # make_delete_call('http://localhost:3000/api/employees/1')
+    print("Here is where I would test the code... if I HAD any!")
 
 
 if __name__ == '__main__':
 
+    tgtURL= input("enter target URL or use default:")
+    if tgtURL= "":
+        tgtURL= DEFAULT_TGT_URL
     testSequence()
 
 

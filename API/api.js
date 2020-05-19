@@ -49,6 +49,14 @@ router.get("/",function(req,res){
 	res.send("Yo!  This my API.  Call it right, or don't call it at all!");
 });
 
+// NEW_USER - receive new user registration data
+router.get("/api/users/new", function(req, res){
+	global.connection.query() {		//TODO: finish query
+		if(error) res.send();		//TODO: finish error msg
+		else res.send(JSON.stringify({"status": 200, "error": null, "response": results}) //TODO: does this need to be modified?
+	} 
+})
+
 // GET - read data from database, return status code 200 if successful
 router.get("/api/restaurants",function(req,res){
 	// get all restaurants (limited to first 10 here), return status code 200
@@ -58,34 +66,14 @@ router.get("/api/restaurants",function(req,res){
 	});
 });
 
-router.get("/api/restaurants/:id",function(req,res){
+router.get("/api/users/:id",function(req,res){
 	console.log(req.params.id);
 	//read a single restaurant with RestauantID = req.params.id (the :id in the url above), return status code 200 if successful, 404 if not
-	global.connection.query('SELECT * FROM nyc_inspections.Restaurants WHERE RestaurantID = ?', [req.params.id],function (error, results, fields) {
+	global.connection.query('SELECT UserID, UserName, UserEmail FROM Users WHERE UserID = ?', [req.params.id],function (error, results, fields) {
 		if (error) throw error;
 		res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
 	});
 });
-
-// PUT - UPDATE data in database, make sure to get the ID of the row to update from URL route, return status code 200 if successful
-router.put("/api/restaurants/:id",function(req,res){
-	console.log(req.body);
-	res.send(JSON.stringify({"status": 200, "error": null, "response": "here on a put -- update restaurant with RestaurantID=" + req.params.id}));
-});
-
-// POST -- create new restaurant, return location of new restaurant in location header, return status code 200 if successful
-router.post("/api/restaurants",function(req,res){
-	console.log(req.body);
-	res.send(JSON.stringify({"status": 201, "error": null, 
-		"Location":"/api/restaurants/id of new restaurant here",
-		"response": "here on a post -- create a new restaurant for " + req.body.RestaurantName + " in " +req.body.Boro}));
-});
-
-// DELETE -- delete restaurant with RestaurantID of :id, return status code 200 if successful
-router.delete("/api/restaurants/:id",function(req,res){
-	res.send(JSON.stringify({"status": 200, "error": null, "response": "here on a delete -- remove restaurant with RestaurantID=" + req.params.id}));
-});
-
 
 
 
