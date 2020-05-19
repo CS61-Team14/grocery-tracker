@@ -46,16 +46,16 @@ router.use(function (req,res,next) {
 // you can test GETs with a browser using URL http://localhost:3000/api/restaurants or http://localhost:3000/api/restaurants/30075445
 // recommend Postman app for testing other verbs, find it at https://www.postman.com/
 router.get("/",function(req,res){
-	res.send("Yo!  This my API.  Call it right, or don't call it at all!");
+	res.send("Hello, you've reached my API without calling anything. Sup?");
 });
 
 // NEW_USER - receive new user registration data
-router.get("/api/users/new", function(req, res){
-	global.connection.query() {		//TODO: finish query
-		if(error) res.send();		//TODO: finish error msg
-		else res.send(JSON.stringify({"status": 200, "error": null, "response": results}) //TODO: does this need to be modified?
-	} 
-})
+// router.get("/api/users/new", function(req, res){
+// 	global.connection.query() {		//TODO: finish query
+// 		if(error) res.send();		//TODO: finish error msg
+// 		else res.send(JSON.stringify({"status": 200, "error": null, "response": results}) //TODO: does this need to be modified?
+// 	} 
+// })
 
 // GET - read data from database, return status code 200 if successful
 router.get("/api/restaurants",function(req,res){
@@ -77,10 +77,10 @@ router.get("/api/users/:id",function(req,res){
 
 
 
-// start server running on port 3000 (or whatever is set in env)
+// start server running on port 3306 (or whatever is set in env)
 app.use(express.static(__dirname + '/'));
 app.use("/",router);
-app.set( 'port', ( process.env.PORT || config.port || 3000 ));
+app.set( 'port', ( process.env.PORT || config.port || 3306 ));
 
 app.listen(app.get( 'port' ), function() {
 	console.log( 'Node server is running on port ' + app.get( 'port' ));
