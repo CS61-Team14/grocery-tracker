@@ -10,7 +10,7 @@ Requires installation of mysql connector: pip install mysql-connector-python
 Based on: https://dev.mysql.com/doc/connector-python/en/connector-python-example-connecting.html
 '''
 
-DEFAULT_TGT_URL= "http://localhost:3306"
+DEFAULT_TGT_URL= "http://localhost:3306/api"
 
 
 # def make_get_call(url, data):
@@ -65,8 +65,15 @@ DEFAULT_TGT_URL= "http://localhost:3306"
 #     print("received: ")
 #     print(resp.json())
 
+
 def create_dummy_users(url):
-    resp= requests.put(url+"/users/new", )
+    data= {"UserID": "-1", "UserName": "Bill Nye", "UserEmail": "billnye@scienceguy.com", "UserPassword": "TMinus10Seconds"}
+    # print(json.dumps(json= data))
+    resp= requests.put(url+"/users/new", json.dumps(data))
+    print(resp.text)
+    # if resp.json()['status'] != 200:
+    #     return false
+
 
 def test_api_running(url):
     print("\ttesting local connection")
@@ -79,10 +86,17 @@ def test_api_running(url):
         print("\tapi not found!")
         return False
 
+# def test_api_server_connection(url):
+#     print("\ttesting connection to server")
+#     resp= requests.get(url+"/user")
+#     print ("\t\t"+resp.text)
+
 def testSequence(url):
     print("Beginning test sequence")
     if not test_api_running(url):
         exit(2)
+    # test_api_server_connection(url)
+    create_dummy_users(url)
 
 if __name__ == '__main__':
 
@@ -90,6 +104,4 @@ if __name__ == '__main__':
     if tgtURL== "":
         tgtURL= DEFAULT_TGT_URL
     testSequence(tgtURL)
-
-
 
