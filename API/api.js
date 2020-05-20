@@ -49,8 +49,10 @@ router.get("/api",function(req,res){
 	res.send("Hello, you've reached my API without calling anything. Sup?");
 });
 
+// I have sinfully kluged a server "ping" as a call to get * from the products table
+// no user should ever call this. If they do, I chose the least hacker-usable table to get.
 router.get("/api/products", function(req,res){
-	global.connection.query('SELECT * FROM Products', function (error, results, fields) {
+	global.connection.query('SELECT * FROM Products WHERE false', function (error, results, fields) {
 		if(error) res.send("error");
 		else res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
 	});

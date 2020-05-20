@@ -101,7 +101,7 @@ def testSequence(url):
     print("basic connection test")
     if not test_api_running(url): exit(2)
     test_api_server_connection(url)
-    # create_dummy_users(url)
+    create_dummy_users(url)
 
     print("tests appear passed. Everything will be okay <3")
 
