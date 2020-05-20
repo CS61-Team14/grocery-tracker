@@ -49,6 +49,13 @@ router.get("/api",function(req,res){
 	res.send("Hello, you've reached my API without calling anything. Sup?");
 });
 
+router.get("/api/products", function(req,res){
+	global.connection.query('SELECT * FROM Products', function (error, results, fields) {
+		if(error) res.send("error");
+		else res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+	});
+});
+
 
 // POST - receive new user registration data
 //TODO: must include password authentication/storage system

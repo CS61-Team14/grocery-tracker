@@ -86,17 +86,24 @@ def test_api_running(url):
         print("\tapi not found!")
         return False
 
-# def test_api_server_connection(url):
-#     print("\ttesting connection to server")
-#     resp= requests.get(url+"/user")
-#     print ("\t\t"+resp.text)
+def test_api_server_connection(url):
+    print("\ttesting connection to server")
+    resp= requests.get(url+"/products")
+    if resp.text== "{\"status\":200,\"error\":null,\"response\":[]}":
+        print("\tapi connected to server")
+        return True
+    else:
+        print("\tprobably api-server error:")
+        print("\t\t"+resp.text)
 
 def testSequence(url):
     print("Beginning test sequence")
-    if not test_api_running(url):
-        exit(2)
-    # test_api_server_connection(url)
-    create_dummy_users(url)
+    print("basic connection test")
+    if not test_api_running(url): exit(2)
+    test_api_server_connection(url)
+    # create_dummy_users(url)
+
+    print("tests appear passed. Everything will be okay <3")
 
 if __name__ == '__main__':
 
