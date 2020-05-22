@@ -61,9 +61,10 @@ router.get("/api/products", function(req,res){
 
 // POST - receive new user registration data
 //TODO: must include password authentication/storage system
+//TODO: how to use server to assign UserID?
 router.put("/api/users/new", function(req,res){
-	global.connection.query('INSERT INTO Users VALUES (?)', [[req.params.UserID, req.params.UserName, req.params.UserEmail, req.params.UserPassword]],function (error, results, fields) {		//TODO: finish query
-		if(error) res.send("Insertion error. Please retry or contact sysadmin. Here's the error:\n"+error+"\nreq= "+req);
+	global.connection.query('INSERT INTO Users VALUES (?)', [[req.body.UserID, req.body.UserName, req.body.UserEmail, req.body.UserPassword]],function (error, results, fields) {		//TODO: finish query
+		if(error) res.send("Insertion error. Please retry or contact sysadmin. Here's the error:\n"+error+"\nreq.body.UserID= "+req.body.UserID);
 		else res.send(JSON.stringify({"status": 201, "error": null, "response": results})); //TODO: does this need to be modified?
 	});
 });

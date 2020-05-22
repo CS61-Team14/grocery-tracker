@@ -11,6 +11,7 @@ Based on: https://dev.mysql.com/doc/connector-python/en/connector-python-example
 '''
 
 DEFAULT_TGT_URL = "http://localhost:3306/api"
+CUSTOM_URL_FLAG = False
 
 
 # def make_get_call(url, data):
@@ -68,15 +69,18 @@ DEFAULT_TGT_URL = "http://localhost:3306/api"
 
 def create_dummy_users(url):
     data={
-        "UserID": "'-1'",
+        "UserID": "-1",
         "UserName": "'Bill Nye'",
         "UserEmail": "'billnye@scienceguy.com'",
         "UserPassword": "'TMinus10Seconds'"
      }
-    # print(json.dumps(json= data))
-    print(json.dumps(data))
-    resp = requests.put(url + "/users/new", json.dumps(data))
-    print("\t" + resp.text)
+    resp = requests.put(url + "/users/new", json= data)
+    if resp.text== "{\"status\":201,\"error\":null,\"response\":{\"fieldCount\":0,\"affectedRows\":1,\"insertId\":0,\"serverStatus\":2,\"warningCount\":0,\"message\":\"\",\"protocol41\":true,\"changedRows\":0}}":
+        print("\tinsertion succeeded")
+        return True
+    else:
+        print("\t" + resp.text)
+        return False
     # if resp.json()['status'] != 200:
     #     return false
 
@@ -114,10 +118,10 @@ def testSequence(url):
 
     print("tests not failed. Everything will be okay <3")
 
-
 if __name__ == '__main__':
 
-    tgtURL = input("enter target URL or use default:")
+    if CUSTOM_URL_FLAG: tgtURL = input("enter target URL or use default:")
+    else: tgtURL= ""
     if tgtURL == "":
         tgtURL = DEFAULT_TGT_URL
     testSequence(tgtURL)
