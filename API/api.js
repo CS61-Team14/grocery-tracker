@@ -45,17 +45,29 @@ router.use(function (req,res,next) {
 // calls should be made to /api/restaurants with GET/PUT/POST/DELETE verbs
 // you can test GETs with a browser using URL http://localhost:3000/api/restaurants or http://localhost:3000/api/restaurants/30075445
 // recommend Postman app for testing other verbs, find it at https://www.postman.com/
-router.get("/",function(req,res){
+router.get("/api",function(req,res){
 	res.send("Hello, you've reached my API without calling anything. Sup?");
 });
 
-// NEW_USER - receive new user registration data
-// router.get("/api/users/new", function(req, res){
-// 	global.connection.query() {		//TODO: finish query
-// 		if(error) res.send();		//TODO: finish error msg
-// 		else res.send(JSON.stringify({"status": 200, "error": null, "response": results}) //TODO: does this need to be modified?
-// 	} 
-// })
+// I have sinfully kluged a server "ping" as a call to get * from the products table
+// no user should ever call this. If they do, I chose the least hacker-usable table to get.
+router.get("/api/products", function(req,res){
+	global.connection.query('SELECT * FROM Products WHERE false', function (error, results, fields) {
+		if(error) res.send("error");
+		else res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+	});
+});
+
+
+// POST - receive new user registration data
+//TODO: must include password authentication/storage system
+//TODO: how to use server to assign UserID?
+router.put("/api/users/new", function(req,res){
+	global.connection.query('INSERT INTO Users VALUES (?)', [[req.body.UserID, req.body.UserName, req.body.UserEmail, req.body.UserPassword]],function (error, results, fields) {		//TODO: finish query
+		if(error) res.send("Insertion error. Please retry or contact sysadmin. Here's the error:\n"+error+"\nreq.body.UserID= "+req.body.UserID);
+		else res.send(JSON.stringify({"status": 201, "error": null, "response": results})); //TODO: does this need to be modified?
+	});
+});
 
 // GET - read data from database, return status code 200 if successful
 router.get("/api/restaurants",function(req,res){

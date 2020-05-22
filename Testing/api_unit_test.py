@@ -10,7 +10,8 @@ Requires installation of mysql connector: pip install mysql-connector-python
 Based on: https://dev.mysql.com/doc/connector-python/en/connector-python-example-connecting.html
 '''
 
-DEFAULT_TGT_URL= "http://localhost:3306"
+DEFAULT_TGT_URL = "http://localhost:3306/api"
+CUSTOM_URL_FLAG = False
 
 
 # def make_get_call(url, data):
@@ -65,31 +66,62 @@ DEFAULT_TGT_URL= "http://localhost:3306"
 #     print("received: ")
 #     print(resp.json())
 
+
 def create_dummy_users(url):
-    resp= requests.put(url+"/users/new", )
+    data={
+        "UserID": "-1",
+        "UserName": "'Bill Nye'",
+        "UserEmail": "'billnye@scienceguy.com'",
+        "UserPassword": "'TMinus10Seconds'"
+     }
+    resp = requests.put(url + "/users/new", json= data)
+    if resp.text== "{\"status\":201,\"error\":null,\"response\":{\"fieldCount\":0,\"affectedRows\":1,\"insertId\":0,\"serverStatus\":2,\"warningCount\":0,\"message\":\"\",\"protocol41\":true,\"changedRows\":0}}":
+        print("\tinsertion succeeded")
+        return True
+    else:
+        print("\t" + resp.text)
+        return False
+    # if resp.json()['status'] != 200:
+    #     return false
+
 
 def test_api_running(url):
     print("\ttesting local connection")
-    resp= requests.get(url)
+    resp = requests.get(url)
     # print("\t\t"+resp.text)
-    if resp.text== "Hello, you've reached my API without calling anything. Sup?":
+    if resp.text == "Hello, you've reached my API without calling anything. Sup?":
         print("\tlocal api is running")
         return True
     else:
         print("\tapi not found!")
         return False
 
+
+def test_api_server_connection(url):
+    print("\ttesting connection to server")
+    resp = requests.get(url + "/products")
+    if resp.text == "{\"status\":200,\"error\":null,\"response\":[]}":
+        print("\tapi connected to server")
+        return True
+    else:
+        print("\tprobably api-server error:")
+        print("\t\t" + resp.text)
+
+
 def testSequence(url):
     print("Beginning test sequence")
-    if not test_api_running(url):
-        exit(2)
+    print("basic connection test")
+    if not test_api_running(url): exit(2)
+    test_api_server_connection(url)
+    print("I/O test")
+    create_dummy_users(url)
+
+    print("tests not failed. Everything will be okay <3")
 
 if __name__ == '__main__':
 
-    tgtURL= input("enter target URL or use default:")
-    if tgtURL== "":
-        tgtURL= DEFAULT_TGT_URL
+    if CUSTOM_URL_FLAG: tgtURL = input("enter target URL or use default:")
+    else: tgtURL= ""
+    if tgtURL == "":
+        tgtURL = DEFAULT_TGT_URL
     testSequence(tgtURL)
-
-
-
