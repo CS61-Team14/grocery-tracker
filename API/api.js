@@ -61,10 +61,9 @@ router.get("/api/products", function(req,res){
 
 // POST - receive new user registration data
 //TODO: must include password authentication/storage system
-router.post("/api/users/new", function(req,res){
-	console.log(req.body)
-	global.connection.query('INSERT INTO Users VALUES (?, ?, ?, ?)', [req.params.userID], [req.params.userName],[req.params.userEmail],[req.params.userPassword],function (error, results, fields) {		//TODO: finish query
-		if(error) res.send("Insertion error. Please retry or contact sysadmin");
+router.put("/api/users/new", function(req,res){
+	global.connection.query('INSERT INTO Users VALUES (?)', [[req.params.UserID, req.params.UserName, req.params.UserEmail, req.params.UserPassword]],function (error, results, fields) {		//TODO: finish query
+		if(error) res.send("Insertion error. Please retry or contact sysadmin. Here's the error:\n"+error+"\nreq= "+req);
 		else res.send(JSON.stringify({"status": 201, "error": null, "response": results})); //TODO: does this need to be modified?
 	});
 });

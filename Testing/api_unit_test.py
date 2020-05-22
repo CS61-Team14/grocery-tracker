@@ -10,7 +10,7 @@ Requires installation of mysql connector: pip install mysql-connector-python
 Based on: https://dev.mysql.com/doc/connector-python/en/connector-python-example-connecting.html
 '''
 
-DEFAULT_TGT_URL= "http://localhost:3306/api"
+DEFAULT_TGT_URL = "http://localhost:3306/api"
 
 
 # def make_get_call(url, data):
@@ -67,48 +67,57 @@ DEFAULT_TGT_URL= "http://localhost:3306/api"
 
 
 def create_dummy_users(url):
-    data= {"UserID": "-1", "UserName": "Bill Nye", "UserEmail": "billnye@scienceguy.com", "UserPassword": "TMinus10Seconds"}
+    data={
+        "UserID": "'-1'",
+        "UserName": "'Bill Nye'",
+        "UserEmail": "'billnye@scienceguy.com'",
+        "UserPassword": "'TMinus10Seconds'"
+     }
     # print(json.dumps(json= data))
-    resp= requests.put(url+"/users/new", json.dumps(data))
-    print(resp.text)
+    print(json.dumps(data))
+    resp = requests.put(url + "/users/new", json.dumps(data))
+    print("\t" + resp.text)
     # if resp.json()['status'] != 200:
     #     return false
 
 
 def test_api_running(url):
     print("\ttesting local connection")
-    resp= requests.get(url)
+    resp = requests.get(url)
     # print("\t\t"+resp.text)
-    if resp.text== "Hello, you've reached my API without calling anything. Sup?":
+    if resp.text == "Hello, you've reached my API without calling anything. Sup?":
         print("\tlocal api is running")
         return True
     else:
         print("\tapi not found!")
         return False
 
+
 def test_api_server_connection(url):
     print("\ttesting connection to server")
-    resp= requests.get(url+"/products")
-    if resp.text== "{\"status\":200,\"error\":null,\"response\":[]}":
+    resp = requests.get(url + "/products")
+    if resp.text == "{\"status\":200,\"error\":null,\"response\":[]}":
         print("\tapi connected to server")
         return True
     else:
         print("\tprobably api-server error:")
-        print("\t\t"+resp.text)
+        print("\t\t" + resp.text)
+
 
 def testSequence(url):
     print("Beginning test sequence")
     print("basic connection test")
     if not test_api_running(url): exit(2)
     test_api_server_connection(url)
+    print("I/O test")
     create_dummy_users(url)
 
-    print("tests appear passed. Everything will be okay <3")
+    print("tests not failed. Everything will be okay <3")
+
 
 if __name__ == '__main__':
 
-    tgtURL= input("enter target URL or use default:")
-    if tgtURL== "":
-        tgtURL= DEFAULT_TGT_URL
+    tgtURL = input("enter target URL or use default:")
+    if tgtURL == "":
+        tgtURL = DEFAULT_TGT_URL
     testSequence(tgtURL)
-
