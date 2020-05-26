@@ -15,9 +15,9 @@ var app=express();
 // get config
 var env = process.argv[2] || 'local'; //use localhost if enviroment not specified
 var config = require('./config')[env]; //read credentials from config.js
+const passport = require('passport'); // For authentication
 
-
-//Database connection
+// Database connection
 app.use(function(req, res, next){
 	global.connection = mysql.createConnection({
 		host     : config.database.host, 
@@ -28,6 +28,24 @@ app.use(function(req, res, next){
 	connection.connect();
 	next();
 });
+
+// Set up Passport for authentication
+const initializePassport = require('./passport-config')
+
+const getUserByEmail = (email) => {
+	// TODO: Return user object with the given email
+
+	// return {id: 1, email:"email1@gmail.com", password:123456};
+}
+const getUserByID = (id) => {
+	// TODO: Return user object with given id
+
+	// return {id: 1, email:"email1@gmail.com", password:123456};
+}
+
+initializePassport(passport, getUserByEmail, getUserByID);
+
+app.use(passport.initialize());
 
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
@@ -45,8 +63,18 @@ router.use(function (req,res,next) {
 // calls should be made to /api/restaurants with GET/PUT/POST/DELETE verbs
 // you can test GETs with a browser using URL http://localhost:3000/api/restaurants or http://localhost:3000/api/restaurants/30075445
 // recommend Postman app for testing other verbs, find it at https://www.postman.com/
-router.get("/api",function(req,res){
+router.get("/api", function(req,res){
+	console.log("calling passport");
+	
 	res.send("Hello, you've reached my API without calling anything. Sup?");
+});
+
+// Temporary route for testing passport authentication
+router.post("/api", passport.authenticate('local'), function(req,res){
+	console.log("Authentication succesful. User is:");
+	// req.user is the authenticated user object
+	console.log(req.user);
+	res.send(req.user);
 });
 
 // I have sinfully kluged a server "ping" as a call to get * from the products table
@@ -86,7 +114,6 @@ router.get("/api/users/:id",function(req,res){
 		res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
 	});
 });
-
 
 
 // start server running on port 3306 (or whatever is set in env)
