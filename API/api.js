@@ -87,6 +87,8 @@ router.get("/api/products", function(req,res){
 });
 
 
+ /* -------- USERS -------- */
+
 // POST - receive new user registration data
 //TODO: must include password authentication/storage system
 //TODO: how to use server to assign UserID?
@@ -97,23 +99,122 @@ router.put("/api/users/new", function(req,res){
 	});
 });
 
-// GET - read data from database, return status code 200 if successful
-router.get("/api/restaurants",function(req,res){
-	// get all restaurants (limited to first 10 here), return status code 200
-	global.connection.query('SELECT * FROM nyc_inspections.Restaurants LIMIT 10', function (error, results, fields) {
-		if (error) throw error;
-		res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
-	});
+router.get("/api/users/get", function(req,res){
+	//TODO: write me
 });
 
-router.get("/api/users/:id",function(req,res){
-	console.log(req.params.id);
-	//read a single restaurant with RestauantID = req.params.id (the :id in the url above), return status code 200 if successful, 404 if not
-	global.connection.query('SELECT UserID, UserName, UserEmail FROM Users WHERE UserID = ?', [req.params.id],function (error, results, fields) {
-		if (error) throw error;
-		res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
-	});
+router.delete("api/users/delete", function(req,res){
+	//TODO: Write me
 });
+
+router.post("/api/users/update", function(req, res){
+	//TODO: update Username
+	//TODO: update password
+	//TODO: update email
+	//TODO: modify defaultBuyingFrequency
+	//make different queries for each?
+});
+
+
+ /* -------- PRODUCTS -------- */
+
+router.put("/api/products/new", function(req,res){
+	//TODO: write me
+	//puts the thing on the user's inventory too
+});
+
+router.post("/api/products/update", function(req,res){
+	//TODO: update daysperwidget
+	//TODO: update name
+});
+
+router.delete("/api/products/delete", function(req,res){
+	//TODO: write me
+	//if it's the last instance, it also deletes the Inventory table
+});
+
+
+ /* -------- STORES -------- */
+
+router.put("/api/stores/new", function(req,res){
+	//TODO: write me
+});
+
+router.post("/api/stores/update", function(req,res){
+	//TODO: update address
+	//TODO: update name
+});
+
+router.delete("/api/stores/delete", function(req,res){
+	//TODO: write me
+});
+
+
+ /* -------- INVENTORY -------- */
+
+
+router.post("/api/inventory/update", function(req,res){
+	//TODO: update PutOnShoppingList
+	//TODO: update RemainingDays
+});
+
+router.post("/api/inventory/goneShopping", function(req,res){
+	//TODO: if you pass it the user, it gets the shopping list and buys one of everything
+	//TODO: if you pass it a JSON object of what you bought and how much, it'll update accordingly
+});
+
+
+ /* -------- STOREPRODUCTS -------- */
+
+router.put("/api/storeProducts/new", function(req,res){
+	//TODO: write me
+});
+
+router.post("/api/storeProducts/update", function(req,res){
+	//TODO: update note
+});
+
+router.get("/api/storeProducts/note", function(req,res){
+	//TODO: get the note of a product
+});
+
+router.delete("/api/storeProducts/delete", function(req,res){
+	//TODO: write me
+});
+
+
+ /* -------- QUERIES -------- */
+
+router.get("/api/inventory", function(req,res){
+	//TODO: what's my inventory?
+});
+
+router.get("/api/store/products", function(req,res){
+	//TODO: what's sold at store x?
+});
+
+router.get("/api/shoppingList", function(req,res){
+	//TODO: view the shopping list
+	//TODO: if you pass a JSON object, it will return the shopping list only for the desired stores
+});
+
+// // GET - read data from database, return status code 200 if successful
+// router.get("/api/restaurants",function(req,res){
+// 	// get all restaurants (limited to first 10 here), return status code 200
+// 	global.connection.query('SELECT * FROM nyc_inspections.Restaurants LIMIT 10', function (error, results, fields) {
+// 		if (error) throw error;
+// 		res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+// 	});
+// });
+
+// router.get("/api/users/:id",function(req,res){
+// 	console.log(req.params.id);
+// 	//read a single restaurant with RestauantID = req.params.id (the :id in the url above), return status code 200 if successful, 404 if not
+// 	global.connection.query('SELECT UserID, UserName, UserEmail FROM Users WHERE UserID = ?', [req.params.id],function (error, results, fields) {
+// 		if (error) throw error;
+// 		res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+// 	});
+// });
 
 
 // start server running on port 3306 (or whatever is set in env)
