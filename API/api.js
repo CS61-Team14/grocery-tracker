@@ -93,7 +93,7 @@ router.get("/api/products", function(req,res){
 //TODO: must include password authentication/storage system
 //TODO: how to use server to assign UserID?
 router.put("/api/users/new", function(req,res){
-	global.connection.query('INSERT INTO Users VALUES (?)', [[req.body.UserID, req.body.UserName, req.body.UserEmail, req.body.UserPassword]],function (error, results, fields) {		//TODO: finish query
+	global.connection.query('INSERT INTO Users VALUES (?)', [[req.body.UserID, req.body.UserName, req.body.UserEmail, req.body.UserPassword]],function (error, results, fields) {
 		if(error) res.send("Insertion error. Please retry or contact sysadmin. Here's the error:\n"+error+"\nreq.body.UserID= "+req.body.UserID);
 		else res.send(JSON.stringify({"status": 201, "error": null, "response": results})); //TODO: does this need to be modified?
 	});
@@ -104,7 +104,10 @@ router.get("/api/users/get", function(req,res){
 });
 
 router.delete("api/users/delete", function(req,res){
-	//TODO: Write me
+	global.connection.query('DELETE * FROM Users WHERE UserID LIKE ?', [req.body.userID], function(error, results, fields) {
+		if(error) res.send("Deletion error. Please retry or contact sysadmin. Here's the error:\n"+error);
+		else res.send(JSON.stringify({"status": 201, "error": null, "response": results}))
+	});
 });
 
 router.post("/api/users/update", function(req, res){
