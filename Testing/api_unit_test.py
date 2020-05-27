@@ -68,7 +68,7 @@ CUSTOM_URL_FLAG = False
 
 
 def create_dummy_users(url):
-    data={
+    data= {
         "UserID": "-1",
         "UserName": "'Bill Nye'",
         "UserEmail": "'billnye@scienceguy.com'",
@@ -84,6 +84,11 @@ def create_dummy_users(url):
     # if resp.json()['status'] != 200:
     #     return false
 
+def delete_dummy_users(url):
+    data= {
+        
+    }
+    resp= requests.delete(url+ "/users/del", json= data)
 
 def test_api_running(url):
     print("\ttesting local connection")
