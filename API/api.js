@@ -103,10 +103,11 @@ router.get("/api/users/get", function(req,res){
 	//TODO: write me
 });
 
-router.delete("api/users/delete", function(req,res){
-	global.connection.query('DELETE * FROM Users WHERE UserID LIKE ?', [req.body.userID], function(error, results, fields) {
+//TODO: security/password
+router.delete("/api/users/delete", function(req,res){
+	global.connection.query('DELETE FROM Users WHERE UserID= ?', [req.body.UserID], function(error, results, fields) {
 		if(error) res.send("Deletion error. Please retry or contact sysadmin. Here's the error:\n"+error);
-		else res.send(JSON.stringify({"status": 201, "error": null, "response": results}))
+		else res.send(JSON.stringify({"status": 200, "error": null, "response": results}))
 	});
 });
 
