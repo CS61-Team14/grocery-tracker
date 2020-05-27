@@ -84,6 +84,17 @@ def create_dummy_users(url):
     # if resp.json()['status'] != 200:
     #     return false
 
+def delete_dummy_users(url):
+    data= {
+        "UserID": "-1"
+    }
+    resp= requests.delete(url+"/users/delete", json= data)
+    if resp.text== "{\"status\":200,\"error\":null,\"response\":{\"fieldCount\":0,\"affectedRows\":1,\"insertId\":0,\"serverStatus\":2,\"warningCount\":0,\"message\":\"\",\"protocol41\":true,\"changedRows\":0}}":
+        print("\tdeletion succeeded")
+        return True
+    else:
+        print("\t"+resp.text)
+        return False
 
 def test_api_running(url):
     print("\ttesting local connection")
@@ -112,9 +123,10 @@ def testSequence(url):
     print("Beginning test sequence")
     print("basic connection test")
     if not test_api_running(url): exit(2)
-    test_api_server_connection(url)
+    if not test_api_server_connection(url): exit(3)
     print("I/O test")
-    create_dummy_users(url)
+    if not create_dummy_users(url): exit(4)
+    if not delete_dummy_users(url): exit(5)
 
     print("tests not failed. Everything will be okay <3")
 
