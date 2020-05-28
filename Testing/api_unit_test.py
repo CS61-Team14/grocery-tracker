@@ -129,24 +129,25 @@ def create_dummy_products(url):
         "ProductName": "'Bread'",
         "ProductDaysPerWidget": "3"
     }
-    eggs= {
-        "UserID": "-1",
-        "ProductID": "-2",
-        "ProductName": "'Eggs'",
-        "ProductDaysPerWidget": "12"
-    }
-    milk= {
-        "UserID": "-1",
-        "ProductID": "-3",
-        "ProductName": "'Milk'",
-        "ProductDaysPerWidget": "8"
-    }
+    # eggs= {
+    #     "UserID": "-1",
+    #     "ProductID": "-2",
+    #     "ProductName": "'Eggs'",
+    #     "ProductDaysPerWidget": "12"
+    # }
+    # milk= {
+    #     "UserID": "-1",
+    #     "ProductID": "-3",
+    #     "ProductName": "'Milk'",
+    #     "ProductDaysPerWidget": "8"
+    # }
     resp1= requests.put(url+"/products/new", json= bread)
-    resp2= requests.put(url+"/products/new", json= eggs)
-    resp3= requests.put(url+"/products/new", json= milk)
+    resp2= requests.put(url+"/inventory/new", json= bread)
+    # resp2= requests.put(url+"/products/new", json= eggs)
+    # resp3= requests.put(url+"/products/new", json= milk)
     print("\t"+resp1.text)
     print("\t"+resp2.text)
-    print("\t"+resp3.text)
+    # print("\t"+resp3.text)
 
 def test_api_running(url):
     print("\ttesting local connection")
