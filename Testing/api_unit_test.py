@@ -96,6 +96,18 @@ def delete_dummy_users(url):
         print("\t"+resp.text)
         return False
 
+def get_dummy_user(url):
+    data= {
+        "TgtUser": "-1"
+    }
+    resp= requests.get(url+"/users/get", json= data)
+    if resp.text== "{\"status\":200,\"error\":null,\"response\":[{\"UserID\":-1,\"UserName\":\"'Bill Nye'\",\"UserEmail\":\"'billnye@scienceguy.com'\"}]}":
+        print("\tget was accurate")
+        return True
+    else:
+        print("\t" + resp.text)
+        return False
+
 def test_api_running(url):
     print("\ttesting local connection")
     resp = requests.get(url)
@@ -126,6 +138,7 @@ def testSequence(url):
     if not test_api_server_connection(url): exit(3)
     print("I/O test")
     if not create_dummy_users(url): exit(4)
+    get_dummy_user(url)
     if not delete_dummy_users(url): exit(5)
 
     print("tests not failed. Everything will be okay <3")
