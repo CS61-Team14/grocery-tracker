@@ -201,7 +201,7 @@ router.put("/api/stores/new", function(req,res){
 	});
 });
 
-router.put("/api/stores/newUser"function(req,res){
+router.put("/api/stores/newUser", function(req,res){
 	global.connection.query('INSERT INTO Users_has_Stores VALUES (?)', [[req.body.UserID, req.body.StoreID]],function (error, results, fields) {
 		if(error) res.send("Insertion error. Please retry or contact sysadmin. Here's the error:\n"+error);
 		else res.send(JSON.stringify({"status": 201, "error": null, "response": results}));
