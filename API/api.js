@@ -172,9 +172,24 @@ router.put("/api/inventory/new", function(req,res){
 	});	//puts the thing on the user's inventory too
 });
 
-router.post("/api/products/update", function(req,res){
-	//TODO: update daysperwidget
-	//TODO: update name
+router.post("/api/products/update/dpw", function(req,res){
+	global.connection.query('UPDATE Products SET ProductDaysPerWidget= ? WHERE ProductID= ?', [req.body.DaysPerWidget, req.body.ProductID], function(error, results, fields){
+		if(error) {
+			res.send("Update error. Please retry or contact sysadmin. Here's the error:\n"+error);
+		} else {
+			res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+		}
+	});
+});
+
+router.post("/api/products/update/name", function(req,res){
+	global.connection.query('UPDATE Products SET ProductName= ? WHERE ProductID= ?', [req.body.ProductName, req.body.ProductID], function(error, results, fields){
+		if(error) {
+			res.send("Update error. Please retry or contact sysadmin. Here's the error:\n"+error);
+		} else {
+			res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+		}
+	});
 });
 
 router.delete("/api/products/delete", function(req,res){

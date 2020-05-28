@@ -159,6 +159,18 @@ def delete_dummy_products(url):
     resp2= requests.delete(url+"/inventory/delete", json= bread)
     resp1= requests.delete(url+"/products/delete", json= bread)
 
+def update_dummy_products(url):
+    bread= {
+        "UserID": "-1",
+        "ProductID": "-1",
+        "ProductName": "'Breadiness'",
+        "ProductDaysPerWidget": "4"
+    }
+    resp1= requests.post(url+"/products/update/name", json= bread)
+    resp2= requests.post(url+"/products/update/dpw", json= bread)
+    print("\t"+resp1.text)
+    print("\t"+resp2.text)
+
 def test_api_running(url):
     print("\ttesting local connection")
     resp = requests.get(url)
@@ -199,7 +211,7 @@ def testSequence(url):
     print("\nProducts Test")
     create_dummy_users(url)
     create_dummy_products(url)
-
+    update_dummy_products(url)
     delete_dummy_products(url)
     delete_dummy_users(url)
 
