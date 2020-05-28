@@ -122,6 +122,54 @@ def update_dummy_user(url):
     resp3= requests.post(url+"/users/update/password", json= data)
     # print("\t"+resp3.text)
 
+def create_dummy_products(url):
+    bread= {
+        "UserID": "-1",
+        "ProductID": "-1",
+        "ProductName": "'Bread'",
+        "ProductDaysPerWidget": "3"
+    }
+    # eggs= {
+    #     "UserID": "-1",
+    #     "ProductID": "-2",
+    #     "ProductName": "'Eggs'",
+    #     "ProductDaysPerWidget": "12"
+    # }
+    # milk= {
+    #     "UserID": "-1",
+    #     "ProductID": "-3",
+    #     "ProductName": "'Milk'",
+    #     "ProductDaysPerWidget": "8"
+    # }
+    resp1= requests.put(url+"/products/new", json= bread)
+    resp2= requests.put(url+"/inventory/new", json= bread)
+    # resp2= requests.put(url+"/products/new", json= eggs)
+    # resp3= requests.put(url+"/products/new", json= milk)
+    print("\t"+resp1.text)
+    print("\t"+resp2.text)
+    # print("\t"+resp3.text)
+
+def delete_dummy_products(url):
+    bread= {
+        "UserID": "-1",
+        "ProductID": "-1",
+        "ProductName": "'Bread'",
+        "ProductDaysPerWidget": "3"
+    }
+    resp2= requests.delete(url+"/inventory/delete", json= bread)
+    resp1= requests.delete(url+"/products/delete", json= bread)
+
+def update_dummy_products(url):
+    bread= {
+        "UserID": "-1",
+        "ProductID": "-1",
+        "ProductName": "'Breadiness'",
+        "ProductDaysPerWidget": "4"
+    }
+    resp1= requests.post(url+"/products/update/name", json= bread)
+    resp2= requests.post(url+"/products/update/dpw", json= bread)
+    print("\t"+resp1.text)
+    print("\t"+resp2.text)
 
 def test_api_running(url):
     print("\ttesting local connection")
@@ -133,7 +181,6 @@ def test_api_running(url):
     else:
         print("\tapi not found!")
         return False
-
 
 def test_api_server_connection(url):
     print("\ttesting connection to server")
@@ -148,16 +195,25 @@ def test_api_server_connection(url):
 
 def testSequence(url):
     print("Beginning test sequence")
-    print("basic connection test")
+
+    print("\nBasic connection test")
     if not test_api_running(url): exit(2)
     if not test_api_server_connection(url): exit(3)
-    print("I/O test")
+
+    print("\nI/O test")
     if not create_dummy_users(url): exit(4)
     if not get_dummy_user(url, "{\"status\":200,\"error\":null,\"response\":[{\"UserID\":-1,\"UserName\":\"'Bill Nye'\",\"UserEmail\":\"'billnye@scienceguy.com'\"}]}"):
         exit(6)
     update_dummy_user(url)
     get_dummy_user(url, "{\"status\":200,\"error\":null,\"response\":[{\"UserID\":-1,\"UserName\":\"Will Nye\",\"UserEmail\":\"'billnye@scienceguy.org'\"}]}")
     if not delete_dummy_users(url): exit(5)
+
+    print("\nProducts Test")
+    create_dummy_users(url)
+    create_dummy_products(url)
+    update_dummy_products(url)
+    delete_dummy_products(url)
+    delete_dummy_users(url)
 
     print("tests not failed. Everything will be okay <3")
 

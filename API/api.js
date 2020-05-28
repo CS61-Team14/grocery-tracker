@@ -158,18 +158,51 @@ router.post("/api/users/update/password", function(req, res){
  /* -------- PRODUCTS -------- */
 
 router.put("/api/products/new", function(req,res){
-	//TODO: write me
-	//puts the thing on the user's inventory too
+	global.connection.query('INSERT INTO Products VALUES (?)', [[req.body.ProductID, req.body.ProductName, req.body.ProductDaysPerWidget]],function (error, results, fields) {
+		if(error) res.send("Insertion error. Please retry or contact sysadmin. Here's the error:\n"+error);
+		else res.send(JSON.stringify({"status": 201, "error": null, "response": results}));
+	});	//puts the thing on the user's inventory too
 });
 
-router.post("/api/products/update", function(req,res){
-	//TODO: update daysperwidget
-	//TODO: update name
+router.put("/api/inventory/new", function(req,res){
+	global.connection.query('INSERT INTO Inventory VALUES (?, 1, TRUE)', [[req.body.UserID, req.body.ProductID]],function (error, results, fields) {
+		if(error) res.send("Insertion error. Please retry or contact sysadmin. Here's the error:\n"+error);
+		else res.send(JSON.stringify({"status": 201, "error": null, "response": results}));
+	});	//puts the thing on the user's inventory too
+});
+
+router.post("/api/products/update/dpw", function(req,res){
+	global.connection.query('UPDATE Products SET ProductDaysPerWidget= ? WHERE ProductID= ?', [req.body.DaysPerWidget, req.body.ProductID], function(error, results, fields){
+		if(error) {
+			res.send("Update error. Please retry or contact sysadmin. Here's the error:\n"+error);
+		} else {
+			res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+		}
+	});
+});
+
+router.post("/api/products/update/name", function(req,res){
+	global.connection.query('UPDATE Products SET ProductName= ? WHERE ProductID= ?', [req.body.ProductName, req.body.ProductID], function(error, results, fields){
+		if(error) {
+			res.send("Update error. Please retry or contact sysadmin. Here's the error:\n"+error);
+		} else {
+			res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+		}
+	});
 });
 
 router.delete("/api/products/delete", function(req,res){
-	//TODO: write me
-	//if it's the last instance, it also deletes the Inventory table
+	global.connection.query('DELETE FROM Products WHERE ProductID= ?', [req.body.ProductID], function(error, results, fields) {
+		if(error) res.send("Deletion error. Please retry or contact sysadmin. Here's the error:\n"+error);
+		else res.send(JSON.stringify({"status": 200, "error": null, "response": results}))
+	});
+});
+
+router.delete("/api/inventory/delete", function(req,res){
+	global.connection.query('DELETE FROM Inventory WHERE Products_ProductID= ? AND Users_UserID= ?', [[req.body.ProductID], [req.body.UserID]], function(error, results, fields) {
+		if(error) res.send("Deletion error. Please retry or contact sysadmin. Here's the error:\n"+error);
+		else res.send(JSON.stringify({"status": 200, "error": null, "response": results}))
+	});
 });
 
 
