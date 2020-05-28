@@ -212,8 +212,14 @@ def testSequence(url):
     create_dummy_users(url)
     create_dummy_products(url)
     update_dummy_products(url)
-    delete_dummy_products(url)
-    delete_dummy_users(url)
+    # delete_dummy_products(url)
+    # delete_dummy_users(url)
+
+    print("\nStore Test")
+    create_dummy_store(url)
+    # get_dummy_store(url)
+    # update_dummy_store(url)
+    # delete_dummy_store(url)
 
     print("tests not failed. Everything will be okay <3")
 
