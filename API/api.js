@@ -270,8 +270,10 @@ router.post("/api/inventory/goneShopping", function(req,res){
  /* -------- STOREPRODUCTS -------- */
 
 router.put("/api/storeProducts/new", function(req,res){
-	//TODO: write me
-	// Will receive a productID and a list of storeIDs where the product can be bought.
+	global.connection.query('INSERT INTO Stores_has_Products VALUES (?)', [[req.body.ProductID, req.body.StoreID, ""]],function (error, results, fields) {
+		if(error) res.send("Insertion error. Please retry or contact sysadmin. Here's the error:\n"+error);
+		else res.send(JSON.stringify({"status": 201, "error": null, "response": results}));
+	});
 });
 
 router.post("/api/storeProducts/update", function(req,res){
@@ -283,8 +285,10 @@ router.get("/api/storeProducts/note", function(req,res){
 });
 
 router.delete("/api/storeProducts/delete", function(req,res){
-	//TODO: write me
-	// Will receive a productID and a list of storeIDs where the product can be bought.
+	global.connection.query('DELETE FROM Stores_has_Products WHERE Stores_StoreID= ? AND Products_ProductID= ?', [[req.body.StoreID], [req.body.ProductID]], function(error, results, fields) {
+		if(error) res.send("Deletion error. Please retry or contact sysadmin. Here's the error:\n"+error);
+		else res.send(JSON.stringify({"status": 200, "error": null, "response": results}))
+	});
 });
 
 
@@ -300,6 +304,18 @@ router.get("/api/store/products", function(req,res){
 });
 
 router.get("/api/shoppingList", function(req,res){
+	if("StoreID" in req.body){
+		global.connection.query('SELECT ProductID, ProductName, StoreName FROM Inventory LEFT JOIN Products ON Inventory.Products_ProductID= Products.ProductID LEFT JOIN Stores_has_Products ON Products.ProductID= Stores_has_Products.Products_ProductID LEFT JOIN Stores ON Stores_has_Products.Stores_StoreID= Stores.StoreID WHERE Users_UserID= ? AND StoreID= ? AND InventoryRemainingDays < 7', [req.body.UserID, req.body.StoreID], function(error, results,fields){
+			if(error) res.send("Update error. Please retry or contact sysadmin. Here's the error:\n"+error);
+			else res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+		});
+	} else {
+		//TODO: there's a security hole here where the user might be able to see stores they don't have access to. It will be fixed by including a reference to Users_has_Stores
+		global.connection.query('SELECT ProductID, ProductName, StoreName FROM Inventory LEFT JOIN Products ON Inventory.Products_ProductID= Products.ProductID LEFT JOIN Stores_has_Products ON Products.ProductID= Stores_has_Products.Products_ProductID LEFT JOIN Stores ON Stores_has_Products.Stores_StoreID= Stores.StoreID WHERE Users_UserID= ? AND InventoryRemainingDays < 7', [req.body.UserID], function(error, results,fields){
+			if(error) res.send("Update error. Please retry or contact sysadmin. Here's the error:\n"+error);
+			else res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+		});
+	}
 	//TODO: view the shopping list
 	//TODO: if you pass a JSON object, it will return the shopping list only for the desired stores
 });
