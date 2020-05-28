@@ -183,19 +183,35 @@ def create_dummy_store(url):
     }
     resp1= requests.put(url+"/stores/new", json= data)
     resp2= requests.put(url+"/stores/newUser", json= data)
-    print(resp1.text)
-    print(resp2.text)
+    print("\t"+resp1.text)
+    print("\t"+resp2.text)
 
-def get_dummy_store(url):
+# def get_dummy_store(url):
+#     data= {
+#         "UserID": "-1",
+#         "StoreID": "-10",
+#         "StoreName": "Vendomart",
+#         "StoreStreetNum": "9999",
+#         "StoreStreet": "Dummy Street",
+#         "StoreCity": "Teston",
+#         "StoreZIP": "99999"
+#     }
+#     resp= requests.get(url+)
+
+def update_dummy_store(url):
     data= {
         "UserID": "-1",
         "StoreID": "-10",
-        "StoreName": "Vendomart",
-        "StoreStreetNum": "9999",
-        "StoreStreet": "Dummy Street",
-        "StoreCity": "Teston",
-        "StoreZIP": "99999"
+        "StoreName": "Vendiplaza",
+        "StoreStreetNum": "9991",
+        "StoreStreet": "Clueless Way",
+        "StoreCity": "Testville",
+        "StoreZIP": "99991"
     }
+    resp1= requests.post(url+"/stores/update/name", json= data)
+    resp2= requests.post(url+"/stores/update/address", json= data)
+    print("\t"+resp1.text)
+    print("\t"+resp2.text)
 
 def test_api_running(url):
     print("\ttesting local connection")
@@ -267,8 +283,8 @@ def testSequence(url):
 
     print("\nStore Test")
     create_dummy_store(url)
-    get_dummy_store(url)
-    # update_dummy_store(url)
+    # get_dummy_store(url)
+    update_dummy_store(url)
 
     print("\nDelete Test")
     delete_test(url)

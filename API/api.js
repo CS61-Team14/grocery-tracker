@@ -209,7 +209,7 @@ router.put("/api/stores/newUser", function(req,res){
 });
 
 router.post("/api/stores/update/address", function(req,res){
-	global.connection.query('UPDATE Stores SET StoreStreetNum= ?, StoreStreet= ?, StoreCity= ?, StoreZIP= ? WHERE ProductID= ?', [req.body.StoreStreetNum, req.body.StoreStreet, req.body.StoreCity, req.body.StoreZIP, req.body.StoreID], function(error, results, fields){
+	global.connection.query('UPDATE Stores SET StoreStreetNum= ?, StoreStreet= ?, StoreCity= ?, StoreZIP= ? WHERE StoreID= ?', [req.body.StoreStreetNum, req.body.StoreStreet, req.body.StoreCity, req.body.StoreZIP, req.body.StoreID], function(error, results, fields){
 		if(error) res.send("Update error. Please retry or contact sysadmin. Here's the error:\n"+error);
 		else res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
 	});
