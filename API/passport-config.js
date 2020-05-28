@@ -3,7 +3,16 @@
 */
 
 const LocalStrategy = require('passport-local').Strategy;
-// const bcrypt = require('bcrypt');
+const bcrypt = require('bcrypt');
+const dotenv = require('dotenv');
+
+dotenv.config({ silent: true });
+
+var JwtStrategy = require('passport-jwt').Strategy,
+    ExtractJwt = require('passport-jwt').ExtractJwt;
+var opts = {}
+opts.jwtFromRequest = ExtractJwt.fromHeader('authorization');
+opts.secretOrKey = process.env.AUTH_SECRET;
 
 function initialize(passport, getUserByEmail, getUserById) {
   const authenticateUser = async (email, password, done) => {
@@ -24,10 +33,23 @@ function initialize(passport, getUserByEmail, getUserById) {
   }
 
   passport.use(new LocalStrategy({ usernameField: 'email' }, authenticateUser));
-  passport.serializeUser((user, done) => done(null, user.id));
-  passport.deserializeUser((id, done) => {
-    return done(null, getUserById(id))
-  });
+
+  passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
+    const user = getUserById(jwt_payload.sub);
+    // User.findOne({id: jwt_payload.sub}, function(err, user) {
+        if (user) {
+            return done(null, user);
+        } else {
+            return done(null, false);
+            // or you could create a new account
+        }
+    }));
+
+
+  // passport.serializeUser((user, done) => done(null, user.id));
+  // passport.deserializeUser((id, done) => {
+  //   return done(null, getUserById(id))
+  // });
 }
 
 module.exports = initialize;
