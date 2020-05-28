@@ -242,6 +242,13 @@ def test_api_server_connection(url):
         print("\tprobably api-server error:")
         print("\t\t" + resp.text)
 
+def get_shopping_list(url):
+    data = {
+        "UserID": "-1"
+    }
+    resp = requests.get(url + "/shoppingList", json=data)
+    print("\t"+resp.text)
+
 def delete_test(url):
     data = {
         "UserID": "-1"
@@ -301,6 +308,9 @@ def testSequence(url):
     # get_dummy_store(url)
     update_dummy_store(url)
     create_storeProducts_relation(url)
+
+    print("\nShopping List Test")
+    get_shopping_list(url)
 
     print("\nDelete Test")
     delete_test(url)
