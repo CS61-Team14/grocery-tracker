@@ -99,8 +99,12 @@ router.put("/api/users/new", function(req,res){
 	});
 });
 
+//TODO: security/password
 router.get("/api/users/get", function(req,res){
-	//TODO: write me
+	global.connection.query('SELECT UserID, UserName, UserEmail FROM Users WHERE UserID= ?', [req.body.TgtUser], function(error, results, fields) {
+		if(error) res.send("Get error. Please retry or contact sysadmin. Here's the error:\n"+error);
+		else res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+	});
 });
 
 //TODO: security/password
@@ -111,14 +115,46 @@ router.delete("/api/users/delete", function(req,res){
 	});
 });
 
-router.post("/api/users/update", function(req, res){
-	//TODO: update Username
-	//TODO: update password
-	//TODO: update email
-	//TODO: modify defaultBuyingFrequency
-	//make different queries for each?
+//TODO: Auth
+router.post("/api/users/update/username", function(req, res){
+	// console.log(JSON.stringify(req.body));
+	global.connection.query('UPDATE Users SET UserName= ? WHERE UserID= ?', [req.body.TgtUserName, req.body.TgtUserID], function(error, results, fields){
+		if(error) {
+			res.send("Update error. Please retry or contact sysadmin. Here's the error:\n"+error);
+		} else {
+			res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+		}
+	});
 });
 
+//TODO: Auth
+router.post("/api/users/update/email", function(req, res){
+	// console.log(JSON.stringify(req.body));
+	global.connection.query('UPDATE Users SET UserEmail= ? WHERE UserID= ?', [req.body.TgtUserEmail, req.body.TgtUserID], function(error, results, fields){
+		if(error) {
+			res.send("Update error. Please retry or contact sysadmin. Here's the error:\n"+error);
+			// console.log(error)
+		} else {
+			res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+		}
+	});
+});
+
+//TODO: Auth
+router.post("/api/users/update/password", function(req, res){
+	// console.log(JSON.stringify(req.body));
+	global.connection.query('UPDATE Users SET UserPassword= ? WHERE UserID= ?', [req.body.TgtUserPassword, req.body.TgtUserID], function(error, results, fields){
+		if(error) {
+			res.send("Update error. Please retry or contact sysadmin. Here's the error:\n"+error);
+			// console.log(error)
+		} else {
+			res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+		}
+	});
+});
+
+
+	
 
  /* -------- PRODUCTS -------- */
 

@@ -96,6 +96,33 @@ def delete_dummy_users(url):
         print("\t"+resp.text)
         return False
 
+def get_dummy_user(url, tgtText):
+    data= {
+        "TgtUser": "-1"
+    }
+    resp= requests.get(url+"/users/get", json= data)
+    if resp.text== tgtText:
+        print("\tget was accurate")
+        return True
+    else:
+        print("\t" + resp.text)
+        return False
+
+def update_dummy_user(url):
+    data= {
+        "TgtUserID": "-1",
+        "TgtUserName": "Will Nye",
+        "TgtUserEmail": "'billnye@scienceguy.org'",
+        "TgtUserPassword": "'InertiaPropertyOfMatter'"
+    }
+    resp1= requests.post(url+"/users/update/username", json= data)
+    # print("\t"+resp1.text)
+    resp2= requests.post(url+"/users/update/email", json= data)
+    # print("\t"+resp2.text)
+    resp3= requests.post(url+"/users/update/password", json= data)
+    # print("\t"+resp3.text)
+
+
 def test_api_running(url):
     print("\ttesting local connection")
     resp = requests.get(url)
@@ -126,6 +153,10 @@ def testSequence(url):
     if not test_api_server_connection(url): exit(3)
     print("I/O test")
     if not create_dummy_users(url): exit(4)
+    if not get_dummy_user(url, "{\"status\":200,\"error\":null,\"response\":[{\"UserID\":-1,\"UserName\":\"'Bill Nye'\",\"UserEmail\":\"'billnye@scienceguy.com'\"}]}"):
+        exit(6)
+    update_dummy_user(url)
+    get_dummy_user(url, "{\"status\":200,\"error\":null,\"response\":[{\"UserID\":-1,\"UserName\":\"Will Nye\",\"UserEmail\":\"'billnye@scienceguy.org'\"}]}")
     if not delete_dummy_users(url): exit(5)
 
     print("tests not failed. Everything will be okay <3")
