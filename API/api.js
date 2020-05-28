@@ -270,8 +270,10 @@ router.post("/api/inventory/goneShopping", function(req,res){
  /* -------- STOREPRODUCTS -------- */
 
 router.put("/api/storeProducts/new", function(req,res){
-	//TODO: write me
-	// Will receive a productID and a list of storeIDs where the product can be bought.
+	global.connection.query('INSERT INTO Stores_has_Products VALUES (?)', [[req.body.ProductID, req.body.StoreID, ""]],function (error, results, fields) {
+		if(error) res.send("Insertion error. Please retry or contact sysadmin. Here's the error:\n"+error);
+		else res.send(JSON.stringify({"status": 201, "error": null, "response": results}));
+	});
 });
 
 router.post("/api/storeProducts/update", function(req,res){
@@ -283,8 +285,10 @@ router.get("/api/storeProducts/note", function(req,res){
 });
 
 router.delete("/api/storeProducts/delete", function(req,res){
-	//TODO: write me
-	// Will receive a productID and a list of storeIDs where the product can be bought.
+	global.connection.query('DELETE FROM Stores_has_Products WHERE Stores_StoreID= ? AND Products_ProductID= ?', [[req.body.StoreID], [req.body.ProductID]], function(error, results, fields) {
+		if(error) res.send("Deletion error. Please retry or contact sysadmin. Here's the error:\n"+error);
+		else res.send(JSON.stringify({"status": 200, "error": null, "response": results}))
+	});
 });
 
 
