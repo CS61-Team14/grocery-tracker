@@ -64,7 +64,6 @@ router.use(function (req,res,next) {
 // you can test GETs with a browser using URL http://localhost:3000/api/restaurants or http://localhost:3000/api/restaurants/30075445
 // recommend Postman app for testing other verbs, find it at https://www.postman.com/
 router.get("/api", function(req,res){
-	console.log("calling passport");
 	
 	res.send("Hello, you've reached my API without calling anything. Sup?");
 });
@@ -208,6 +207,7 @@ router.post("/api/inventory/goneShopping", function(req,res){
 
 router.put("/api/storeProducts/new", function(req,res){
 	//TODO: write me
+	// Will receive a productID and a list of storeIDs where the product can be bought.
 });
 
 router.post("/api/storeProducts/update", function(req,res){
@@ -220,6 +220,7 @@ router.get("/api/storeProducts/note", function(req,res){
 
 router.delete("/api/storeProducts/delete", function(req,res){
 	//TODO: write me
+	// Will receive a productID and a list of storeIDs where the product can be bought.
 });
 
 
@@ -231,6 +232,7 @@ router.get("/api/inventory", function(req,res){
 
 router.get("/api/store/products", function(req,res){
 	//TODO: what's sold at store x?
+	// I think I'd need to know what stores contain product x instead
 });
 
 router.get("/api/shoppingList", function(req,res){
