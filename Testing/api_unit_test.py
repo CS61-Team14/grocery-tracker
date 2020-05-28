@@ -171,6 +171,48 @@ def update_dummy_products(url):
     print("\t"+resp1.text)
     print("\t"+resp2.text)
 
+def create_dummy_store(url):
+    data= {
+        "UserID": "-1",
+        "StoreID": "-10",
+        "StoreName": "Vendomart",
+        "StoreStreetNum": "9999",
+        "StoreStreet": "Dummy Street",
+        "StoreCity": "Teston",
+        "StoreZIP": "99999"
+    }
+    resp1= requests.put(url+"/stores/new", json= data)
+    resp2= requests.put(url+"/stores/newUser", json= data)
+    print("\t"+resp1.text)
+    print("\t"+resp2.text)
+
+# def get_dummy_store(url):
+#     data= {
+#         "UserID": "-1",
+#         "StoreID": "-10",
+#         "StoreName": "Vendomart",
+#         "StoreStreetNum": "9999",
+#         "StoreStreet": "Dummy Street",
+#         "StoreCity": "Teston",
+#         "StoreZIP": "99999"
+#     }
+#     resp= requests.get(url+)
+
+def update_dummy_store(url):
+    data= {
+        "UserID": "-1",
+        "StoreID": "-10",
+        "StoreName": "Vendiplaza",
+        "StoreStreetNum": "9991",
+        "StoreStreet": "Clueless Way",
+        "StoreCity": "Testville",
+        "StoreZIP": "99991"
+    }
+    resp1= requests.post(url+"/stores/update/name", json= data)
+    resp2= requests.post(url+"/stores/update/address", json= data)
+    print("\t"+resp1.text)
+    print("\t"+resp2.text)
+
 def test_api_running(url):
     print("\ttesting local connection")
     resp = requests.get(url)
@@ -192,6 +234,32 @@ def test_api_server_connection(url):
         print("\tprobably api-server error:")
         print("\t\t" + resp.text)
 
+def delete_test(url):
+    data = {
+        "UserID": "-1"
+    }
+    bread= {
+        "UserID": "-1",
+        "ProductID": "-1",
+        "ProductName": "'Bread'",
+        "ProductDaysPerWidget": "3"
+    }
+    store= {
+        "UserID": "-1",
+        "StoreID": "-10"
+    }
+    inventoryDel= requests.delete(url+"/inventory/delete", json= bread)
+    UHSDel= requests.delete(url+"/stores/deleteUser", json= store)
+    productsDel= requests.delete(url+"/products/delete", json= bread)
+    usersDel = requests.delete(url + "/users/delete", json=data)
+    storeDel= requests.delete(url+"/stores/delete", json= store)
+
+    print("\t"+inventoryDel.text)
+    print("\t"+UHSDel.text)
+    print("\t"+productsDel.text)
+    print("\t"+usersDel.text)
+    print("\t"+storeDel.text)
+
 
 def testSequence(url):
     print("Beginning test sequence")
@@ -212,10 +280,16 @@ def testSequence(url):
     create_dummy_users(url)
     create_dummy_products(url)
     update_dummy_products(url)
-    delete_dummy_products(url)
-    delete_dummy_users(url)
 
-    print("tests not failed. Everything will be okay <3")
+    print("\nStore Test")
+    create_dummy_store(url)
+    # get_dummy_store(url)
+    update_dummy_store(url)
+
+    print("\nDelete Test")
+    delete_test(url)
+
+    print("\ntests not failed. Everything will be okay <3")
 
 if __name__ == '__main__':
 
