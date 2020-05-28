@@ -159,8 +159,10 @@ router.post("/api/users/update/password", function(req, res){
  /* -------- PRODUCTS -------- */
 
 router.put("/api/products/new", function(req,res){
-	//TODO: write me
-	//puts the thing on the user's inventory too
+	global.connection.query('INSERT INTO Products VALUES (?); INSERT INTO Inventory VALUES (?, 1, TRUE);', [[req.body.ProductID, req.body.ProductName, req.body.ProductDaysPerWidget], [req.body.UserID, req.body.ProductID]],function (error, results, fields) {
+		if(error) res.send("Insertion error. Please retry or contact sysadmin. Here's the error:\n"+error+"\nreq.body.UserID= "+req.body.UserID);
+		else res.send(JSON.stringify({"status": 201, "error": null, "response": results})); //TODO: does this need to be modified?
+	});	//puts the thing on the user's inventory too
 });
 
 router.post("/api/products/update", function(req,res){
