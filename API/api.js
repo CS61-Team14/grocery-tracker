@@ -178,8 +178,17 @@ router.post("/api/products/update", function(req,res){
 });
 
 router.delete("/api/products/delete", function(req,res){
-	//TODO: write me
-	//if it's the last instance, it also deletes the Inventory table
+	global.connection.query('DELETE FROM Products WHERE ProductID= ?', [req.body.ProductID], function(error, results, fields) {
+		if(error) res.send("Deletion error. Please retry or contact sysadmin. Here's the error:\n"+error);
+		else res.send(JSON.stringify({"status": 200, "error": null, "response": results}))
+	});
+});
+
+router.delete("/api/inventory/delete", function(req,res){
+	global.connection.query('DELETE FROM Inventory WHERE Products_ProductID= ? AND Users_UserID= ?', [[req.body.ProductID], [req.body.UserID]], function(error, results, fields) {
+		if(error) res.send("Deletion error. Please retry or contact sysadmin. Here's the error:\n"+error);
+		else res.send(JSON.stringify({"status": 200, "error": null, "response": results}))
+	});
 });
 
 
