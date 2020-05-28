@@ -93,7 +93,7 @@ router.get("/api/products", function(req,res){
 //TODO: how to use server to assign UserID?
 router.put("/api/users/new", function(req,res){
 	global.connection.query('INSERT INTO Users VALUES (?)', [[req.body.UserID, req.body.UserName, req.body.UserEmail, req.body.UserPassword]],function (error, results, fields) {
-		if(error) res.send("Insertion error. Please retry or contact sysadmin. Here's the error:\n"+error+"\nreq.body.UserID= "+req.body.UserID);
+		if(error) res.send("Insertion error. Please retry or contact sysadmin. Here's the error:\n"+error);
 		else res.send(JSON.stringify({"status": 201, "error": null, "response": results})); //TODO: does this need to be modified?
 	});
 });
@@ -261,6 +261,13 @@ router.post("/api/inventory/update/daysRemaining", function(req,res){
 	//TODO
 });
 
+router.get("/api/inventory/get", function(req,res){
+	global.connection.query('SELECT ProductName, InventoryRemainingDays, PutOnShoppingList FROM Inventory LEFT JOIN Products ON Products.ProductID= Inventory.Products_ProductID WHERE Users_UserID= ?', [req.body.UserID], function(error, results, fields) {
+		if(error) res.send("Get error. Please retry or contact sysadmin. Here's the error:\n"+error);
+		else res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+	});
+});
+
 router.post("/api/inventory/goneShopping", function(req,res){
 	//TODO: if you pass it the user, it gets the shopping list and buys one of everything
 	//TODO: if you pass it a JSON object of what you bought and how much, it'll update accordingly
@@ -294,9 +301,6 @@ router.delete("/api/storeProducts/delete", function(req,res){
 
  /* -------- QUERIES -------- */
 
-router.get("/api/inventory", function(req,res){
-	//TODO: what's my inventory?
-});
 
 router.get("/api/store/products", function(req,res){
 	//TODO: what's sold at store x?

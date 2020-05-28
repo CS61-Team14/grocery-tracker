@@ -69,7 +69,7 @@ CUSTOM_URL_FLAG = False
 
 def create_dummy_users(url):
     data={
-        "UserID": "-1",
+        "UserID": "1",
         "UserName": "'Bill Nye'",
         "UserEmail": "'billnye@scienceguy.com'",
         "UserPassword": "'TMinus10Seconds'"
@@ -86,7 +86,7 @@ def create_dummy_users(url):
 
 def delete_dummy_users(url):
     data= {
-        "UserID": "-1"
+        "UserID": "1"
     }
     resp= requests.delete(url+"/users/delete", json= data)
     if resp.text== "{\"status\":200,\"error\":null,\"response\":{\"fieldCount\":0,\"affectedRows\":1,\"insertId\":0,\"serverStatus\":2,\"warningCount\":0,\"message\":\"\",\"protocol41\":true,\"changedRows\":0}}":
@@ -96,21 +96,16 @@ def delete_dummy_users(url):
         print("\t"+resp.text)
         return False
 
-def get_dummy_user(url, tgtText):
+def get_dummy_user(url):
     data= {
         "TgtUser": "-1"
     }
     resp= requests.get(url+"/users/get", json= data)
-    if resp.text== tgtText:
-        print("\tget was accurate")
-        return True
-    else:
-        print("\t" + resp.text)
-        return False
+    print("\t" + resp.text)
 
 def update_dummy_user(url):
     data= {
-        "TgtUserID": "-1",
+        "TgtUserID": "1",
         "TgtUserName": "Will Nye",
         "TgtUserEmail": "'billnye@scienceguy.org'",
         "TgtUserPassword": "'InertiaPropertyOfMatter'"
@@ -124,19 +119,19 @@ def update_dummy_user(url):
 
 def create_dummy_products(url):
     bread= {
-        "UserID": "-1",
+        "UserID": "1",
         "ProductID": "-1",
         "ProductName": "'Bread'",
         "ProductDaysPerWidget": "3"
     }
     # eggs= {
-    #     "UserID": "-1",
+    #     "UserID": "1",
     #     "ProductID": "-2",
     #     "ProductName": "'Eggs'",
     #     "ProductDaysPerWidget": "12"
     # }
     # milk= {
-    #     "UserID": "-1",
+    #     "UserID": "1",
     #     "ProductID": "-3",
     #     "ProductName": "'Milk'",
     #     "ProductDaysPerWidget": "8"
@@ -151,7 +146,7 @@ def create_dummy_products(url):
 
 def delete_dummy_products(url):
     bread= {
-        "UserID": "-1",
+        "UserID": "1",
         "ProductID": "-1",
         "ProductName": "'Bread'",
         "ProductDaysPerWidget": "3"
@@ -161,7 +156,7 @@ def delete_dummy_products(url):
 
 def update_dummy_products(url):
     bread= {
-        "UserID": "-1",
+        "UserID": "1",
         "ProductID": "-1",
         "ProductName": "'Breadiness'",
         "ProductDaysPerWidget": "4"
@@ -173,7 +168,7 @@ def update_dummy_products(url):
 
 def create_dummy_store(url):
     data= {
-        "UserID": "-1",
+        "UserID": "1",
         "StoreID": "-10",
         "StoreName": "Vendomart",
         "StoreStreetNum": "9999",
@@ -188,7 +183,7 @@ def create_dummy_store(url):
 
 # def get_dummy_store(url):
 #     data= {
-#         "UserID": "-1",
+#         "UserID": "1",
 #         "StoreID": "-10",
 #         "StoreName": "Vendomart",
 #         "StoreStreetNum": "9999",
@@ -200,7 +195,7 @@ def create_dummy_store(url):
 
 def update_dummy_store(url):
     data= {
-        "UserID": "-1",
+        "UserID": "1",
         "StoreID": "-10",
         "StoreName": "Vendiplaza",
         "StoreStreetNum": "9991",
@@ -244,36 +239,43 @@ def test_api_server_connection(url):
 
 def get_shopping_list(url):
     data = {
-        "UserID": "-1"
+        "UserID": "1"
     }
     resp = requests.get(url + "/shoppingList", json=data)
     print("\t"+resp.text)
     data = {
-        "UserID": "-1",
+        "UserID": "1",
         "StoreID": "-10"
     }
     resp = requests.get(url + "/shoppingList", json=data)
     print("\t"+resp.text)
     data = {
-        "UserID": "-1",
+        "UserID": "1",
         "StoreID": "-1"
     }
     resp = requests.get(url + "/shoppingList", json=data)
     print("\t"+resp.text)
 
+def get_inventory(url):
+    data = {
+        "UserID": "1"
+
+    }
+    resp= requests.get(url + "/inventory/get", json= data)
+    print("\t"+resp.text)
 
 def delete_test(url):
     data = {
-        "UserID": "-1"
+        "UserID": "1"
     }
     bread= {
-        "UserID": "-1",
+        "UserID": "1",
         "ProductID": "-1",
         "ProductName": "'Bread'",
         "ProductDaysPerWidget": "3"
     }
     store= {
-        "UserID": "-1",
+        "UserID": "1",
         "StoreID": "-10"
     }
     storeProducts= {
@@ -304,12 +306,11 @@ def testSequence(url):
     if not test_api_server_connection(url): exit(3)
 
     print("\nI/O test")
-    if not create_dummy_users(url): exit(4)
-    if not get_dummy_user(url, "{\"status\":200,\"error\":null,\"response\":[{\"UserID\":-1,\"UserName\":\"'Bill Nye'\",\"UserEmail\":\"'billnye@scienceguy.com'\"}]}"):
-        exit(6)
+    create_dummy_users(url)
+    get_dummy_user(url)
     update_dummy_user(url)
-    get_dummy_user(url, "{\"status\":200,\"error\":null,\"response\":[{\"UserID\":-1,\"UserName\":\"Will Nye\",\"UserEmail\":\"'billnye@scienceguy.org'\"}]}")
-    if not delete_dummy_users(url): exit(5)
+    get_dummy_user(url)
+    delete_dummy_users(url)
 
     print("\nProducts Test")
     create_dummy_users(url)
@@ -324,6 +325,9 @@ def testSequence(url):
 
     print("\nShopping List Test")
     get_shopping_list(url)
+
+    print("\nInventory Test")
+    get_inventory(url)
 
     print("\nDelete Test")
     delete_test(url)
