@@ -248,6 +248,19 @@ def get_shopping_list(url):
     }
     resp = requests.get(url + "/shoppingList", json=data)
     print("\t"+resp.text)
+    data = {
+        "UserID": "-1",
+        "StoreID": "-10"
+    }
+    resp = requests.get(url + "/shoppingList", json=data)
+    print("\t"+resp.text)
+    data = {
+        "UserID": "-1",
+        "StoreID": "-1"
+    }
+    resp = requests.get(url + "/shoppingList", json=data)
+    print("\t"+resp.text)
+
 
 def delete_test(url):
     data = {

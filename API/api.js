@@ -305,7 +305,10 @@ router.get("/api/store/products", function(req,res){
 
 router.get("/api/shoppingList", function(req,res){
 	if("StoreID" in req.body){
-
+		global.connection.query('SELECT ProductID, ProductName, StoreName FROM Inventory LEFT JOIN Products ON Inventory.Products_ProductID= Products.ProductID LEFT JOIN Stores_has_Products ON Products.ProductID= Stores_has_Products.Products_ProductID LEFT JOIN Stores ON Stores_has_Products.Stores_StoreID= Stores.StoreID WHERE Users_UserID= ? AND StoreID= ? AND InventoryRemainingDays < 7', [req.body.UserID, req.body.StoreID], function(error, results,fields){
+			if(error) res.send("Update error. Please retry or contact sysadmin. Here's the error:\n"+error);
+			else res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+		});
 	} else {
 		//TODO: there's a security hole here where the user might be able to see stores they don't have access to. It will be fixed by including a reference to Users_has_Stores
 		global.connection.query('SELECT ProductID, ProductName, StoreName FROM Inventory LEFT JOIN Products ON Inventory.Products_ProductID= Products.ProductID LEFT JOIN Stores_has_Products ON Products.ProductID= Stores_has_Products.Products_ProductID LEFT JOIN Stores ON Stores_has_Products.Stores_StoreID= Stores.StoreID WHERE Users_UserID= ? AND InventoryRemainingDays < 7', [req.body.UserID], function(error, results,fields){
