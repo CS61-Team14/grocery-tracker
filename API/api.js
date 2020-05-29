@@ -18,6 +18,7 @@ var config = require("./config")[env]; //read credentials from config.js
 const passport = require("passport"); // For authentication
 const dotenv = require("dotenv");
 const jwt = require("jwt-simple");
+var HttpStatus = require('http-status-codes');
 
 dotenv.config({ silent: true });
 const bcrypt = require("bcrypt");
@@ -58,6 +59,14 @@ var router = express.Router();
 
 // log request types to server console
 router.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "http://localhost:8080"); // update to match the domain you will make the request from
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, authorization");
+res.header("Access-Control-Allow-Methods", "POST, PUT, GET, DELETE, OPTIONS");
+	if (req.method == "OPTIONS" ) {
+    res
+    .status(HttpStatus.OK)
+    .send('ok');
+}
   console.log("/" + req.method);
   next();
 });
@@ -66,19 +75,18 @@ router.use(function (req, res, next) {
 // calls should be made to /api/restaurants with GET/PUT/POST/DELETE verbs
 // you can test GETs with a browser using URL http://localhost:3000/api/restaurants or http://localhost:3000/api/restaurants/30075445
 // recommend Postman app for testing other verbs, find it at https://www.postman.com/
-router.get("/api", function (req, res) {
+router.get("/api/jwt", passport.authenticate('jwt', { session: false }), function (req, res) {
+  console.log("jwt succesful. User is "+JSON.stringify(req.user));
   res.send("Hello, you've reached my API without calling anything. Sup?");
 });
 
 // Temporary route for testing passport authentication
-router.post(
-  "/api",
-  passport.authenticate("local", { session: false }),
+router.post("/api/signin", passport.authenticate("local", { session: false }),
   function (req, res) {
     console.log("Authentication succesful. User is:");
     // req.user is the authenticated user object
-    console.log(req.user);
-    res.send(req.user);
+	console.log(req.user);
+	res.send({ token: tokenForUser(req.user) });
   }
 );
 
@@ -102,7 +110,8 @@ router.get("/api/products", function (req, res) {
 //TODO: must include password authentication/storage system
 //TODO: how to use server to assign UserID?
 
-router.put("/api/users/new", function (req, res) {
+router.put("/api/signup", function (req, res) {
+console.log("got signup request");
   const plain_password = req.body.UserPassword;
   bcrypt.hash(plain_password, saltRounds, function (err, hash) {
     global.connection.query(

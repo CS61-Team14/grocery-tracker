@@ -1,5 +1,5 @@
 /* 	Passport Configuration
-	  Based on https://github.com/WebDevSimplified/Nodejs-Passport-Login/blob/master/passport-config.js
+	  Using the Passport library: http://www.passportjs.org/
 */
 
 const LocalStrategy = require("passport-local").Strategy;
@@ -14,11 +14,9 @@ var opts = {};
 opts.jwtFromRequest = ExtractJwt.fromHeader("authorization");
 opts.secretOrKey = process.env.AUTH_SECRET;
 
-// function initialize(passport, getUserByEmail, getUserById) {
 function initialize(passport) {
   const authenticateUser = async (email, password, done) => {
     console.log("email: " + email + " Password: " + password);
-    // const user = await getUserByEmail(email);
     global.connection.query(
       "SELECT * FROM Users WHERE UserEmail= ?",
       [email],
@@ -63,8 +61,9 @@ function initialize(passport) {
 
   passport.use(
     new JwtStrategy(opts, function (jwt_payload, done) {
+      console.log("JWT request!!!!!");
       global.connection.query(
-        "SELECT * FROM Users WHERE UserEmail= ?",
+        "SELECT * FROM Users WHERE UserID= ?",
         [jwt_payload.sub],
         function (error, results, fields) {
           if (error) {
@@ -74,7 +73,7 @@ function initialize(passport) {
             user = {
               UserID: results[0].UserID,
               UserName: results[0].UserName,
-              UserEmail: email,
+              UserEmail: results[0].UserEmail,
               UserPassword: results[0].UserPassword,
             };
             console.log("User is: " + JSON.stringify(user));
@@ -88,11 +87,6 @@ function initialize(passport) {
       );
     })
   );
-
-  // passport.serializeUser((user, done) => done(null, user.id));
-  // passport.deserializeUser((id, done) => {
-  //   return done(null, getUserById(id))
-  // });
 }
 
 module.exports = initialize;
