@@ -39,10 +39,10 @@ app.use(function (req, res, next) {
 const initializePassport = require("./passport-config");
 
 // Generate unique token for users when they sign up / sign in
-function tokenForUser(user) {
+function tokenForUser(id) {
   const timestamp = new Date().getTime();
   return jwt.encode(
-    { sub: user.UserID, iat: timestamp },
+    { sub: id, iat: timestamp },
     process.env.AUTH_SECRET
   );
 }
@@ -88,7 +88,7 @@ router.post("/api/signin", passport.authenticate("local", { session: false }),
     console.log("Authentication succesful. User is:");
     // req.user is the authenticated user object
 	console.log(req.user);
-	res.send({ token: tokenForUser(req.user) });
+	res.send({ token: tokenForUser(req.user.UserID) });
   }
 );
 
@@ -124,8 +124,8 @@ console.log("got signup request");
         // else res.send(results);
         else {
           console.log(results);
-          newUser = { UserID: results.insertID };
-          res.send({ token: tokenForUser(newUser) });
+          console.log("Succesfully Signed up User with ID: "+results.insertId);
+          res.send({ token: tokenForUser(results.insertId) });
         }
       }
     );
@@ -234,9 +234,9 @@ router.post("/api/users/update/password", function(req, res){
 
  /* -------- PRODUCTS -------- */
 
-router.put("/api/products/new", function(req,res){
-	global.connection.query('INSERT INTO Products VALUES (?)', [[req.body.ProductID, req.body.ProductName, req.body.ProductDaysPerWidget]],function (error, results, fields) {
-		if(error) res.send("Insertion error. Please retry or contact sysadmin. Here's the error:\n"+error);
+router.put("/api/products/new", passport.authenticate("jwt", { session: false }), function(req,res){
+	global.connection.query('INSERT INTO Products (ProductName, ProductDaysPerWidget) VALUES (?)', [[req.body.ProductName, req.body.ProductDaysPerWidget]],function (error, results, fields) {
+		if(error) res.send("Insertion error:\n"+error);
 		else res.send(JSON.stringify({"status": 201, "error": null, "response": results}));
 	});	//puts the thing on the user's inventory too
 });
@@ -261,9 +261,10 @@ router.post("/api/products/update/name", function(req,res){
 	});
 });
 
-router.delete("/api/products/delete", function(req,res){
-	global.connection.query('DELETE FROM Products WHERE ProductID= ?', [req.body.ProductID], function(error, results, fields) {
-		if(error) res.send("Deletion error. Please retry or contact sysadmin. Here's the error:\n"+error);
+router.delete("/api/products/delete/:id", passport.authenticate("jwt", { session: false }), function(req,res){
+  console.log("got delete prod request");
+	global.connection.query('DELETE FROM Products WHERE ProductID= ?', [req.params.id], function(error, results, fields) {
+		if(error) res.send("Deletion error:\n"+error);
 		else res.send(JSON.stringify({"status": 200, "error": null, "response": results}))
 	});
 });
@@ -271,22 +272,62 @@ router.delete("/api/products/delete", function(req,res){
 
  /* -------- STORES -------- */
 
-router.put("/api/stores/new", function(req,res){
-	global.connection.query('INSERT INTO Stores VALUES (?)', [[req.body.StoreID, req.body.StoreName, req.body.StoreStreetNum, req.body.StoreStreet, req.body.StoreCity, req.body.StoreZIP]],function (error, results, fields) {
+router.put("/api/stores/new", passport.authenticate("jwt", { session: false }), function (req, res) {
+  global.connection.query(
+    "INSERT INTO Stores (StoreName, StoreStreetNum, StoreStreet, StoreCity, StoreZIP) VALUES (?)",
+    [
+      [
+        req.body.StoreName,
+        req.body.StoreStreetNum,
+        req.body.StoreStreet,
+        req.body.StoreCity,
+        req.body.StoreZIP,
+      ],
+    ],
+    function (error, results, fields) {
+      if (error)
+        res.send(
+          "Insertion error. Please retry or contact sysadmin. Here's the error:\n" +
+            error
+        );
+      else
+        res.send(
+          JSON.stringify({ status: 201, error: null, response: results })
+        );
+    }
+  );
+});
+
+router.get("/api/storesByUser", passport.authenticate("jwt", { session: false }), function(req,res){
+	global.connection.query('SELECT * FROM Stores l JOIN Users_has_Stores r ON l.StoreID = r.Stores_StoreID WHERE r.Users_UserID = ?', [req.user.UserID],function (error, results, fields) {
 		if(error) res.send("Insertion error. Please retry or contact sysadmin. Here's the error:\n"+error);
 		else res.send(JSON.stringify({"status": 201, "error": null, "response": results}));
 	});
 });
 
-router.put("/api/stores/newUser", function(req,res){
-	global.connection.query('INSERT INTO Users_has_Stores VALUES (?)', [[req.body.UserID, req.body.StoreID]],function (error, results, fields) {
-		if(error) res.send("Insertion error. Please retry or contact sysadmin. Here's the error:\n"+error);
-		else res.send(JSON.stringify({"status": 201, "error": null, "response": results}));
-	});
+router.put("/api/stores/newUser", passport.authenticate('jwt', { session: false }), function (req, res) {
+  console.log("Inserting into Users_hasStores, userID is: " +req.user.UserID + " store id is "+req.body.StoreID);
+  global.connection.query(
+    "INSERT INTO Users_has_Stores VALUES (?)",
+    [[req.user.UserID, req.body.StoreID]],
+    function (error, results, fields) {
+      if (error)
+        res.send(
+          "Insertion error. Please retry or contact sysadmin. Here's the error:\n" +
+            error
+        );
+      else
+        res.send(
+          JSON.stringify({ status: 201, error: null, response: results })
+        );
+    }
+  );
 });
 
-router.post("/api/stores/update", function(req,res){
-	global.connection.query('UPDATE Stores SET StoreStreetNum= ?, StoreStreet= ?, StoreCity= ?, StoreZIP= ? WHERE StoreID= ?', [req.body.StoreStreetNum, req.body.StoreStreet, req.body.StoreCity, req.body.StoreZIP, req.body.StoreID], function(error, results, fields){
+router.post("/api/stores/update", passport.authenticate("jwt", { session: false }), function(req,res){
+  console.log("updating store");
+  console.log("store is: "+JSON.stringify(req.body));
+	global.connection.query('UPDATE Stores SET StoreName= ?, StoreStreetNum= ?, StoreStreet= ?, StoreCity= ?, StoreZIP= ? WHERE StoreID= ?', [req.body.StoreName, req.body.StoreStreetNum, req.body.StoreStreet, req.body.StoreCity, req.body.StoreZIP, req.body.StoreID], function(error, results, fields){
 		if(error) res.send("Update error. Please retry or contact sysadmin. Here's the error:\n"+error);
 		else res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
 	});
@@ -299,9 +340,11 @@ router.post("/api/stores/update/name", function(req,res){
 	});
 });
 
-router.delete("/api/stores/delete", function(req,res){
-	global.connection.query('DELETE FROM Stores WHERE StoreID= ?', [req.body.StoreID], function(error, results, fields) {
-		if(error) res.send("Deletion error. Please retry or contact sysadmin. Here's the error:\n"+error);
+router.delete("/api/stores/delete/:id", function(req,res){
+  console.log(req.body);
+   console.log("Got Delete Request on StoreID: "+req.params.id);
+	global.connection.query('DELETE FROM Stores WHERE StoreID= ?', [req.params.id], function(error, results, fields) {
+		if(error) res.send("Deletion error:\n"+error);
 		else res.send(JSON.stringify({"status": 200, "error": null, "response": results}))
 	});
 });
@@ -316,11 +359,24 @@ router.delete("/api/stores/deleteUser", function(req,res){
 
  /* -------- INVENTORY -------- */
 
-router.put("/api/inventory/new", function(req,res){
-	global.connection.query('INSERT INTO Inventory VALUES (?, 1, TRUE)', [[req.body.UserID, req.body.ProductID]],function (error, results, fields) {
-		if(error) res.send("Insertion error. Please retry or contact sysadmin. Here's the error:\n"+error);
+router.put("/api/inventory/new", passport.authenticate("jwt", { session: false }), function(req,res){
+  console.log("Got insert into inv req");
+  console.log(JSON.stringify(req.body));
+	global.connection.query('INSERT INTO Inventory (Users_UserID, Products_ProductID, InventoryRunOutDate) VALUES (?, ?, date_add(NOW(), INTERVAL ? DAY))', [req.user.UserID, req.body.ProductID, req.body.InventoryRemainingDays],function (error, results, fields) {
+		if(error) console.log(error);//res.send("Insertion error:\n"+error);
 		else res.send(JSON.stringify({"status": 201, "error": null, "response": results}));
 	});	//puts the thing on the user's inventory too
+});
+
+router.get("/api/productsByUser", passport.authenticate("jwt", { session: false }), function(req,res){
+  console.log("Got prodByUser req");
+  // console.log(JSON.stringify(req.body));
+	global.connection.query('SELECT * FROM Products l JOIN Inventory r ON l.ProductID = r.Products_ProductID WHERE r.Users_UserID = ?', [req.user.UserID],function (error, results, fields) {
+		if(error) res.send("Insertion error. Please retry or contact sysadmin. Here's the error:\n"+error);
+		else {
+      res.send(JSON.stringify({"status": 201, "error": null, "response": results}));
+    }
+	});
 });
 
 router.delete("/api/inventory/delete", function(req,res){
@@ -360,9 +416,15 @@ router.post("/api/inventory/goneShopping", function(req,res){
 
  /* -------- STOREPRODUCTS -------- */
 
-router.put("/api/storeProducts/new", function(req,res){
-	global.connection.query('INSERT INTO Stores_has_Products VALUES (?)', [[req.body.ProductID, req.body.StoreID, ""]],function (error, results, fields) {
-		if(error) res.send("Insertion error. Please retry or contact sysadmin. Here's the error:\n"+error);
+router.put("/api/storeProducts/new", passport.authenticate("jwt", { session: false }), function(req,res){
+
+  console.log("Got cat request");
+  const arr = req.body.stores;
+  let vals = arr.map(elm => {return `(${req.body.ProductID}, ${elm})`}).join();
+  console.log(vals);
+
+	global.connection.query(`INSERT INTO Stores_has_Products (Products_ProductID, Stores_StoreID) VALUES ${vals}`,function (error, results, fields) {
+		if(error) console.log(error);//res.send("Insertion error. Please retry or contact sysadmin. Here's the error:\n"+error);
 		else res.send(JSON.stringify({"status": 201, "error": null, "response": results}));
 	});
 });

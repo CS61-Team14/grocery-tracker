@@ -3,4 +3,3 @@ Testing/venv/*
 Testing/.idea/*
 API/node_modules/*
 API/package-lock.json
-.env

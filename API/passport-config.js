@@ -61,7 +61,7 @@ function initialize(passport) {
 
   passport.use(
     new JwtStrategy(opts, function (jwt_payload, done) {
-      console.log("JWT request!!!!!");
+      console.log("Payload ID is: "+jwt_payload.sub);
       global.connection.query(
         "SELECT * FROM Users WHERE UserID= ?",
         [jwt_payload.sub],
@@ -76,7 +76,6 @@ function initialize(passport) {
               UserEmail: results[0].UserEmail,
               UserPassword: results[0].UserPassword,
             };
-            console.log("User is: " + JSON.stringify(user));
             if (user == null) {
               return done(null, false);
             } else {
