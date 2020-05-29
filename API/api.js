@@ -90,8 +90,7 @@ router.post("/api", passport.authenticate('local', { session: false }), function
 	res.send(req.user);
 });
 
-// I have sinfully kluged a server "ping" as a call to get * from the products table
-// no user should ever call this. If they do, I chose the least hacker-usable table to get.
+//returns nothing
 router.get("/api/products", function(req,res){
 	global.connection.query('SELECT * FROM Products WHERE false', function (error, results, fields) {
 		if(error) res.send("error");
@@ -285,6 +284,13 @@ router.get("/api/inventory/get", function(req,res){
 		else res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
 	});
 });
+
+// router.get("/api/inventory/getAll", function(req,res){
+// 	global.connection.query('SELECT ProductName, InventoryRemainingDays, PutOnShoppingList FROM Inventory WHERE Users_UserID= ?', [req.body.UserID], function(error, results, fields) {
+// 		if(error) res.send("Get error. Please retry or contact sysadmin. Here's the error:\n"+error);
+// 		else res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+// 	});
+// });
 
 router.post("/api/inventory/goneShopping", function(req,res){
 	//TODO: if you pass it the user, it gets the shopping list and buys one of everything
