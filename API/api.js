@@ -57,18 +57,20 @@ app.use(bodyParser.json());
 // set up router
 var router = express.Router();
 
-// log request types to server console
+// log request types to server console and allow CORS stuff because it refused to work otherwise
 router.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "http://localhost:8080"); // update to match the domain you will make the request from
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, authorization");
 res.header("Access-Control-Allow-Methods", "POST, PUT, GET, DELETE, OPTIONS");
 	if (req.method == "OPTIONS" ) {
+    console.log("Got OPTIONS request");
     res
     .status(HttpStatus.OK)
     .send('ok');
-}
-  console.log("/" + req.method);
-  next();
+  } else {
+    console.log("/" + req.method);
+    next();
+  }
 });
 
 // set up routing
@@ -322,10 +324,9 @@ router.delete("/api/products/delete", function (req, res) {
 
 router.put("/api/stores/new", function (req, res) {
   global.connection.query(
-    "INSERT INTO Stores VALUES (?)",
+    "INSERT INTO Stores (StoreName, StoreStreetNum, StoreStreet, StoreCity, StoreZIP) VALUES (?)",
     [
       [
-        req.body.StoreID,
         req.body.StoreName,
         req.body.StoreStreetNum,
         req.body.StoreStreet,
@@ -347,10 +348,10 @@ router.put("/api/stores/new", function (req, res) {
   );
 });
 
-router.put("/api/stores/newUser", function (req, res) {
+router.put("/api/stores/newUser", passport.authenticate('jwt', { session: false }), function (req, res) {
   global.connection.query(
     "INSERT INTO Users_has_Stores VALUES (?)",
-    [[req.body.UserID, req.body.StoreID]],
+    [[req.user.UserID, req.body.StoreID]],
     function (error, results, fields) {
       if (error)
         res.send(
