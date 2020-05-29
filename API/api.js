@@ -301,10 +301,12 @@ router.delete("/api/storeProducts/delete", function(req,res){
 
  /* -------- QUERIES -------- */
 
-
+//TODO: I think this doesn't work and I don't know why
 router.get("/api/store/products", function(req,res){
-
-	//TODO: what's sold at store x?
+	global.connection.query('SELECT ProductName, StoreName FROM Stores JOIN Stores_has_Products ON Stores.StoreID= Stores_has_Products.Stores_StoreID JOIN Products ON Stores_has_Products.Products_ProductID= Products.ProductID WHERE StoreID= ?', [req.body.StoreID], function(error, results, fields) {
+		if(error) res.send("Get error. Please retry or contact sysadmin. Here's the error:\n"+error);
+		else res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+	});
 });
 
 router.get("/api/products/store", function(req,res){

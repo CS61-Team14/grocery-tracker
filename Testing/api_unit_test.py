@@ -264,12 +264,13 @@ def get_inventory(url):
     resp= requests.get(url + "/inventory/get", json= data)
     print("\t"+resp.text)
 
-# def what_is_sold_here(url):
-#     data= {
-#         "UserID": "1",
-#         "StoreID": "-10"
-#     }
-#     resp= requests.get(url + )
+def what_is_sold_here(url):
+    data= {
+        "UserID": "1",
+        "StoreID": "-10"
+    }
+    resp= requests.get(url + "/store/products")
+    print("\t"+resp.text)
 
 def where_is_this_sold(url):
     data= {
@@ -344,6 +345,7 @@ def testSequence(url):
     print("\nInventory Test")
     get_inventory(url)
     where_is_this_sold(url)
+    what_is_sold_here(url)
 
     print("\nDelete Test")
     delete_test(url)
