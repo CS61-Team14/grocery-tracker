@@ -486,7 +486,7 @@ router.get("/api/products/store", function (req, res) {
   // I think I'd need to know what stores contain product x instead
 });
 
-router.get("/api/shoppingList", function (req, res) {
+router.get("/api/shoppingList", passport.authenticate("jwt", { session: false }), function (req, res) {
   if ("StoreID" in req.body) {
     global.connection.query(
       "SELECT ProductID, ProductName, StoreName FROM Inventory LEFT JOIN Products ON Inventory.Products_ProductID= Products.ProductID LEFT JOIN Stores_has_Products ON Products.ProductID= Stores_has_Products.Products_ProductID LEFT JOIN Stores ON Stores_has_Products.Stores_StoreID= Stores.StoreID WHERE Users_UserID= ? AND StoreID= ? AND InventoryRemainingDays < 7",
