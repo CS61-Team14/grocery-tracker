@@ -77,10 +77,10 @@ res.header("Access-Control-Allow-Methods", "POST, PUT, GET, DELETE, OPTIONS");
 // calls should be made to /api/restaurants with GET/PUT/POST/DELETE verbs
 // you can test GETs with a browser using URL http://localhost:3000/api/restaurants or http://localhost:3000/api/restaurants/30075445
 // recommend Postman app for testing other verbs, find it at https://www.postman.com/
-router.get("/api/jwt", passport.authenticate('jwt', { session: false }), function (req, res) {
-  console.log("jwt succesful. User is "+JSON.stringify(req.user));
-  res.send("Hello, you've reached my API without calling anything. Sup?");
-});
+// router.get("/api/jwt", passport.authenticate('jwt', { session: false }), function (req, res) {
+//   console.log("jwt succesful. User is "+JSON.stringify(req.user));
+//   res.send("Hello, you've reached my API without calling anything. Sup?");
+// });
 
 // Temporary route for testing passport authentication
 router.post("/api/signin", passport.authenticate("local", { session: false }),
@@ -349,6 +349,7 @@ router.put("/api/stores/new", function (req, res) {
 });
 
 router.put("/api/stores/newUser", passport.authenticate('jwt', { session: false }), function (req, res) {
+  console.log("Inserting into Users_hasStores, userID is: " +req.user.UserID + " store id is "+req.body.StoreID);
   global.connection.query(
     "INSERT INTO Users_has_Stores VALUES (?)",
     [[req.user.UserID, req.body.StoreID]],
