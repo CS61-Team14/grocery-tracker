@@ -110,9 +110,9 @@ router.put("/api/users/new", function(req,res){
 	const plain_password = req.body.UserPassword;
     bcrypt.hash(plain_password, saltRounds, function (err, hash) {
 		global.connection.query('INSERT INTO Users (UserName, UserEmail, UserPassword) VALUES (?)', [[req.body.UserName, req.body.UserEmail, hash]],function (error, results, fields) {
-		if(error) res.send("Insertion error. Please retry or contact sysadmin. Here's the error:\n"+error+"\nreq.body.UserID= "+req.body.UserID);
-		else res.send(results); //TODO: does this need to be modified?
-	});
+			if(error) res.send("Insertion error. Please retry or contact sysadmin. Here's the error:\n"+error+"\nreq.body.UserID= "+req.body.UserID);
+			else res.send(results); //TODO: does this need to be modified?
+		});
 	});
 });
 
@@ -279,6 +279,13 @@ router.post("/api/inventory/update/daysRemaining", function(req,res){
 	//TODO
 });
 
+router.get("/api/inventory/get", function(req,res){
+	global.connection.query('SELECT ProductName, InventoryRemainingDays, PutOnShoppingList FROM Inventory LEFT JOIN Products ON Products.ProductID= Inventory.Products_ProductID WHERE Users_UserID= ?', [req.body.UserID], function(error, results, fields) {
+		if(error) res.send("Get error. Please retry or contact sysadmin. Here's the error:\n"+error);
+		else res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+	});
+});
+
 router.post("/api/inventory/goneShopping", function(req,res){
 	//TODO: if you pass it the user, it gets the shopping list and buys one of everything
 	//TODO: if you pass it a JSON object of what you bought and how much, it'll update accordingly
@@ -312,12 +319,20 @@ router.delete("/api/storeProducts/delete", function(req,res){
 
  /* -------- QUERIES -------- */
 
-router.get("/api/inventory", function(req,res){
-	//TODO: what's my inventory?
+//TODO: I think this doesn't work and I don't know why
+router.get("/api/store/products", function(req,res){
+	global.connection.query('SELECT ProductName, StoreName FROM Stores JOIN Stores_has_Products ON Stores.StoreID= Stores_has_Products.Stores_StoreID JOIN Products ON Stores_has_Products.Products_ProductID= Products.ProductID WHERE StoreID= ?', [req.body.StoreID], function(error, results, fields) {
+		if(error) res.send("Get error. Please retry or contact sysadmin. Here's the error:\n"+error);
+		else res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+	});
 });
 
-router.get("/api/store/products", function(req,res){
-	//TODO: what's sold at store x?
+router.get("/api/products/store", function(req,res){
+	global.connection.query('SELECT ProductName, StoreName FROM Products LEFT JOIN Stores_has_Products ON Products.ProductID= Stores_has_Products.Products_ProductID LEFT JOIN Stores ON Stores_has_Products.Stores_StoreID= Stores.StoreID WHERE ProductID= ?', [req.body.ProductID], function(error, results, fields) {
+		if(error) res.send("Get error. Please retry or contact sysadmin. Here's the error:\n"+error);
+		else res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+	});
+
 	// I think I'd need to know what stores contain product x instead
 });
 
