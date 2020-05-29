@@ -92,18 +92,12 @@ router.post("/api/signin", passport.authenticate("local", { session: false }),
   }
 );
 
-// I have sinfully kluged a server "ping" as a call to get * from the products table
-// no user should ever call this. If they do, I chose the least hacker-usable table to get.
-router.get("/api/products", function (req, res) {
-  global.connection.query("SELECT * FROM Products WHERE false", function (
-    error,
-    results,
-    fields
-  ) {
-    if (error) res.send("error");
-    else
-      res.send(JSON.stringify({ status: 200, error: null, response: results }));
-  });
+//returns nothing
+router.get("/api/products", function(req,res){
+	global.connection.query('SELECT * FROM Products WHERE false', function (error, results, fields) {
+		if(error) res.send("error");
+		else res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+	});
 });
 
 /* -------- USERS -------- */
@@ -223,344 +217,173 @@ router.post("/api/users/update/email", function (req, res) {
 });
 
 //TODO: Auth
-router.post("/api/users/update/password", function (req, res) {
-  // console.log(JSON.stringify(req.body));
-  global.connection.query(
-    "UPDATE Users SET UserPassword= ? WHERE UserID= ?",
-    [req.body.TgtUserPassword, req.body.TgtUserID],
-    function (error, results, fields) {
-      if (error) {
-        res.send(
-          "Update error. Please retry or contact sysadmin. Here's the error:\n" +
-            error
-        );
-        // console.log(error)
-      } else {
-        res.send(
-          JSON.stringify({ status: 200, error: null, response: results })
-        );
-      }
-    }
-  );
+router.post("/api/users/update/password", function(req, res){
+	// console.log(JSON.stringify(req.body));
+	global.connection.query('UPDATE Users SET UserPassword= ? WHERE UserID= ?', [req.body.TgtUserPassword, req.body.TgtUserID], function(error, results, fields){
+		if(error) {
+			res.send("Update error. Please retry or contact sysadmin. Here's the error:\n"+error);
+			// console.log(error)
+		} else {
+			res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+		}
+	});
 });
 
-/* -------- PRODUCTS -------- */
 
-router.put("/api/products/new", function (req, res) {
-  global.connection.query(
-    "INSERT INTO Products VALUES (?)",
-    [[req.body.ProductID, req.body.ProductName, req.body.ProductDaysPerWidget]],
-    function (error, results, fields) {
-      if (error)
-        res.send(
-          "Insertion error. Please retry or contact sysadmin. Here's the error:\n" +
-            error
-        );
-      else
-        res.send(
-          JSON.stringify({ status: 201, error: null, response: results })
-        );
-    }
-  ); //puts the thing on the user's inventory too
+	
+
+ /* -------- PRODUCTS -------- */
+
+router.put("/api/products/new", function(req,res){
+	global.connection.query('INSERT INTO Products VALUES (?)', [[req.body.ProductID, req.body.ProductName, req.body.ProductDaysPerWidget]],function (error, results, fields) {
+		if(error) res.send("Insertion error. Please retry or contact sysadmin. Here's the error:\n"+error);
+		else res.send(JSON.stringify({"status": 201, "error": null, "response": results}));
+	});	//puts the thing on the user's inventory too
 });
 
-router.post("/api/products/update/dpw", function (req, res) {
-  global.connection.query(
-    "UPDATE Products SET ProductDaysPerWidget= ? WHERE ProductID= ?",
-    [req.body.DaysPerWidget, req.body.ProductID],
-    function (error, results, fields) {
-      if (error) {
-        res.send(
-          "Update error. Please retry or contact sysadmin. Here's the error:\n" +
-            error
-        );
-      } else {
-        res.send(
-          JSON.stringify({ status: 200, error: null, response: results })
-        );
-      }
-    }
-  );
+router.post("/api/products/update/dpw", function(req,res){
+	global.connection.query('UPDATE Products SET ProductDaysPerWidget= ? WHERE ProductID= ?', [req.body.DaysPerWidget, req.body.ProductID], function(error, results, fields){
+		if(error) {
+			res.send("Update error. Please retry or contact sysadmin. Here's the error:\n"+error);
+		} else {
+			res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+		}
+	});
 });
 
-router.post("/api/products/update/name", function (req, res) {
-  global.connection.query(
-    "UPDATE Products SET ProductName= ? WHERE ProductID= ?",
-    [req.body.ProductName, req.body.ProductID],
-    function (error, results, fields) {
-      if (error) {
-        res.send(
-          "Update error. Please retry or contact sysadmin. Here's the error:\n" +
-            error
-        );
-      } else {
-        res.send(
-          JSON.stringify({ status: 200, error: null, response: results })
-        );
-      }
-    }
-  );
+router.post("/api/products/update/name", function(req,res){
+	global.connection.query('UPDATE Products SET ProductName= ? WHERE ProductID= ?', [req.body.ProductName, req.body.ProductID], function(error, results, fields){
+		if(error) {
+			res.send("Update error. Please retry or contact sysadmin. Here's the error:\n"+error);
+		} else {
+			res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+		}
+	});
 });
 
-router.delete("/api/products/delete", function (req, res) {
-  global.connection.query(
-    "DELETE FROM Products WHERE ProductID= ?",
-    [req.body.ProductID],
-    function (error, results, fields) {
-      if (error)
-        res.send(
-          "Deletion error. Please retry or contact sysadmin. Here's the error:\n" +
-            error
-        );
-      else
-        res.send(
-          JSON.stringify({ status: 200, error: null, response: results })
-        );
-    }
-  );
+router.delete("/api/products/delete", function(req,res){
+	global.connection.query('DELETE FROM Products WHERE ProductID= ?', [req.body.ProductID], function(error, results, fields) {
+		if(error) res.send("Deletion error. Please retry or contact sysadmin. Here's the error:\n"+error);
+		else res.send(JSON.stringify({"status": 200, "error": null, "response": results}))
+	});
 });
 
-/* -------- STORES -------- */
 
-router.put("/api/stores/new", function (req, res) {
-  global.connection.query(
-    "INSERT INTO Stores (StoreName, StoreStreetNum, StoreStreet, StoreCity, StoreZIP) VALUES (?)",
-    [
-      [
-        req.body.StoreName,
-        req.body.StoreStreetNum,
-        req.body.StoreStreet,
-        req.body.StoreCity,
-        req.body.StoreZIP,
-      ],
-    ],
-    function (error, results, fields) {
-      if (error)
-        res.send(
-          "Insertion error. Please retry or contact sysadmin. Here's the error:\n" +
-            error
-        );
-      else
-        res.send(
-          JSON.stringify({ status: 201, error: null, response: results })
-        );
-    }
-  );
+ /* -------- STORES -------- */
+
+router.put("/api/stores/new", function(req,res){
+	global.connection.query('INSERT INTO Stores VALUES (?)', [[req.body.StoreID, req.body.StoreName, req.body.StoreStreetNum, req.body.StoreStreet, req.body.StoreCity, req.body.StoreZIP]],function (error, results, fields) {
+		if(error) res.send("Insertion error. Please retry or contact sysadmin. Here's the error:\n"+error);
+		else res.send(JSON.stringify({"status": 201, "error": null, "response": results}));
+	});
 });
 
-router.put("/api/stores/newUser", passport.authenticate('jwt', { session: false }), function (req, res) {
-  console.log("Inserting into Users_hasStores, userID is: " +req.user.UserID + " store id is "+req.body.StoreID);
-  global.connection.query(
-    "INSERT INTO Users_has_Stores VALUES (?)",
-    [[req.user.UserID, req.body.StoreID]],
-    function (error, results, fields) {
-      if (error)
-        res.send(
-          "Insertion error. Please retry or contact sysadmin. Here's the error:\n" +
-            error
-        );
-      else
-        res.send(
-          JSON.stringify({ status: 201, error: null, response: results })
-        );
-    }
-  );
+router.put("/api/stores/newUser", function(req,res){
+	global.connection.query('INSERT INTO Users_has_Stores VALUES (?)', [[req.body.UserID, req.body.StoreID]],function (error, results, fields) {
+		if(error) res.send("Insertion error. Please retry or contact sysadmin. Here's the error:\n"+error);
+		else res.send(JSON.stringify({"status": 201, "error": null, "response": results}));
+	});
 });
 
-router.post("/api/stores/update", function (req, res) {
-  global.connection.query(
-    "UPDATE Stores SET StoreStreetNum= ?, StoreStreet= ?, StoreCity= ?, StoreZIP= ? WHERE StoreID= ?",
-    [
-      req.body.StoreStreetNum,
-      req.body.StoreStreet,
-      req.body.StoreCity,
-      req.body.StoreZIP,
-      req.body.StoreID,
-    ],
-    function (error, results, fields) {
-      if (error)
-        res.send(
-          "Update error. Please retry or contact sysadmin. Here's the error:\n" +
-            error
-        );
-      else
-        res.send(
-          JSON.stringify({ status: 200, error: null, response: results })
-        );
-    }
-  );
+router.post("/api/stores/update", function(req,res){
+	global.connection.query('UPDATE Stores SET StoreStreetNum= ?, StoreStreet= ?, StoreCity= ?, StoreZIP= ? WHERE StoreID= ?', [req.body.StoreStreetNum, req.body.StoreStreet, req.body.StoreCity, req.body.StoreZIP, req.body.StoreID], function(error, results, fields){
+		if(error) res.send("Update error. Please retry or contact sysadmin. Here's the error:\n"+error);
+		else res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+	});
 });
 
-router.post("/api/stores/update/name", function (req, res) {
-  global.connection.query(
-    "UPDATE Stores SET StoreName= ? WHERE StoreID= ?",
-    [req.body.StoreName, req.body.StoreID],
-    function (error, results, fields) {
-      if (error)
-        res.send(
-          "Update error. Please retry or contact sysadmin. Here's the error:\n" +
-            error
-        );
-      else
-        res.send(
-          JSON.stringify({ status: 200, error: null, response: results })
-        );
-    }
-  );
+router.post("/api/stores/update/name", function(req,res){
+	global.connection.query('UPDATE Stores SET StoreName= ? WHERE StoreID= ?', [req.body.StoreName, req.body.StoreID], function(error, results, fields){
+		if(error) res.send("Update error. Please retry or contact sysadmin. Here's the error:\n"+error);
+		else res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+	});
 });
 
-router.delete("/api/stores/delete", function (req, res) {
-  global.connection.query(
-    "DELETE FROM Stores WHERE StoreID= ?",
-    [req.body.StoreID],
-    function (error, results, fields) {
-      if (error)
-        res.send(
-          "Deletion error. Please retry or contact sysadmin. Here's the error:\n" +
-            error
-        );
-      else
-        res.send(
-          JSON.stringify({ status: 200, error: null, response: results })
-        );
-    }
-  );
+router.delete("/api/stores/delete", function(req,res){
+	global.connection.query('DELETE FROM Stores WHERE StoreID= ?', [req.body.StoreID], function(error, results, fields) {
+		if(error) res.send("Deletion error. Please retry or contact sysadmin. Here's the error:\n"+error);
+		else res.send(JSON.stringify({"status": 200, "error": null, "response": results}))
+	});
 });
 
-router.delete("/api/stores/deleteUser", function (req, res) {
-  global.connection.query(
-    "DELETE FROM Users_has_Stores WHERE Stores_StoreID= ? AND Users_UserID= ?",
-    [req.body.StoreID, req.body.UserID],
-    function (error, results, fields) {
-      if (error)
-        res.send(
-          "Deletion error. Please retry or contact sysadmin. Here's the error:\n" +
-            error
-        );
-      else
-        res.send(
-          JSON.stringify({ status: 200, error: null, response: results })
-        );
-    }
-  );
+router.delete("/api/stores/deleteUser", function(req,res){
+		global.connection.query('DELETE FROM Users_has_Stores WHERE Stores_StoreID= ? AND Users_UserID= ?', [req.body.StoreID, req.body.UserID], function(error, results, fields) {
+		if(error) res.send("Deletion error. Please retry or contact sysadmin. Here's the error:\n"+error);
+		else res.send(JSON.stringify({"status": 200, "error": null, "response": results}))
+	});
 });
 
-/* -------- INVENTORY -------- */
 
-router.put("/api/inventory/new", function (req, res) {
-  global.connection.query(
-    "INSERT INTO Inventory VALUES (?, 1, TRUE)",
-    [[req.body.UserID, req.body.ProductID]],
-    function (error, results, fields) {
-      if (error)
-        res.send(
-          "Insertion error. Please retry or contact sysadmin. Here's the error:\n" +
-            error
-        );
-      else
-        res.send(
-          JSON.stringify({ status: 201, error: null, response: results })
-        );
-    }
-  ); //puts the thing on the user's inventory too
+ /* -------- INVENTORY -------- */
+
+router.put("/api/inventory/new", function(req,res){
+	global.connection.query('INSERT INTO Inventory VALUES (?, 1, TRUE)', [[req.body.UserID, req.body.ProductID]],function (error, results, fields) {
+		if(error) res.send("Insertion error. Please retry or contact sysadmin. Here's the error:\n"+error);
+		else res.send(JSON.stringify({"status": 201, "error": null, "response": results}));
+	});	//puts the thing on the user's inventory too
 });
 
-router.delete("/api/inventory/delete", function (req, res) {
-  global.connection.query(
-    "DELETE FROM Inventory WHERE Products_ProductID= ? AND Users_UserID= ?",
-    [[req.body.ProductID], [req.body.UserID]],
-    function (error, results, fields) {
-      if (error)
-        res.send(
-          "Deletion error. Please retry or contact sysadmin. Here's the error:\n" +
-            error
-        );
-      else
-        res.send(
-          JSON.stringify({ status: 200, error: null, response: results })
-        );
-    }
-  );
+router.delete("/api/inventory/delete", function(req,res){
+	global.connection.query('DELETE FROM Inventory WHERE Products_ProductID= ? AND Users_UserID= ?', [[req.body.ProductID], [req.body.UserID]], function(error, results, fields) {
+		if(error) res.send("Deletion error. Please retry or contact sysadmin. Here's the error:\n"+error);
+		else res.send(JSON.stringify({"status": 200, "error": null, "response": results}))
+	});
 });
 
-router.post("/api/inventory/update/onList", function (req, res) {
-  //TODO
+router.post("/api/inventory/update/onList", function(req,res){
+	//TODO
 });
 
-router.post("/api/inventory/update/daysRemaining", function (req, res) {
-  //TODO
+router.post("/api/inventory/update/daysRemaining", function(req,res){
+	//TODO
 });
 
-router.get("/api/inventory/get", function (req, res) {
-  global.connection.query(
-    "SELECT ProductName, InventoryRemainingDays, PutOnShoppingList FROM Inventory LEFT JOIN Products ON Products.ProductID= Inventory.Products_ProductID WHERE Users_UserID= ?",
-    [req.body.UserID],
-    function (error, results, fields) {
-      if (error)
-        res.send(
-          "Get error. Please retry or contact sysadmin. Here's the error:\n" +
-            error
-        );
-      else
-        res.send(
-          JSON.stringify({ status: 200, error: null, response: results })
-        );
-    }
-  );
+router.get("/api/inventory/get", function(req,res){
+	global.connection.query('SELECT ProductName, InventoryRemainingDays, PutOnShoppingList FROM Inventory LEFT JOIN Products ON Products.ProductID= Inventory.Products_ProductID WHERE Users_UserID= ?', [req.body.UserID], function(error, results, fields) {
+		if(error) res.send("Get error. Please retry or contact sysadmin. Here's the error:\n"+error);
+		else res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+	});
 });
 
-router.post("/api/inventory/goneShopping", function (req, res) {
-  //TODO: if you pass it the user, it gets the shopping list and buys one of everything
-  //TODO: if you pass it a JSON object of what you bought and how much, it'll update accordingly
+// router.get("/api/inventory/getAll", function(req,res){
+// 	global.connection.query('SELECT ProductName, InventoryRemainingDays, PutOnShoppingList FROM Inventory WHERE Users_UserID= ?', [req.body.UserID], function(error, results, fields) {
+// 		if(error) res.send("Get error. Please retry or contact sysadmin. Here's the error:\n"+error);
+// 		else res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+// 	});
+// });
+
+router.post("/api/inventory/goneShopping", function(req,res){
+	//TODO: if you pass it the user, it gets the shopping list and buys one of everything
+	//TODO: if you pass it a JSON object of what you bought and how much, it'll update accordingly
 });
 
-/* -------- STOREPRODUCTS -------- */
 
-router.put("/api/storeProducts/new", function (req, res) {
-  global.connection.query(
-    "INSERT INTO Stores_has_Products VALUES (?)",
-    [[req.body.ProductID, req.body.StoreID, ""]],
-    function (error, results, fields) {
-      if (error)
-        res.send(
-          "Insertion error. Please retry or contact sysadmin. Here's the error:\n" +
-            error
-        );
-      else
-        res.send(
-          JSON.stringify({ status: 201, error: null, response: results })
-        );
-    }
-  );
+ /* -------- STOREPRODUCTS -------- */
+
+router.put("/api/storeProducts/new", function(req,res){
+	global.connection.query('INSERT INTO Stores_has_Products VALUES (?)', [[req.body.ProductID, req.body.StoreID, ""]],function (error, results, fields) {
+		if(error) res.send("Insertion error. Please retry or contact sysadmin. Here's the error:\n"+error);
+		else res.send(JSON.stringify({"status": 201, "error": null, "response": results}));
+	});
 });
 
-router.post("/api/storeProducts/update", function (req, res) {
-  //TODO: update note
+router.post("/api/storeProducts/update", function(req,res){
+	//TODO: update note
 });
 
-router.get("/api/storeProducts/note", function (req, res) {
-  //TODO: get the note of a product
+router.get("/api/storeProducts/note", function(req,res){
+	//TODO: get the note of a product
 });
 
-router.delete("/api/storeProducts/delete", function (req, res) {
-  global.connection.query(
-    "DELETE FROM Stores_has_Products WHERE Stores_StoreID= ? AND Products_ProductID= ?",
-    [[req.body.StoreID], [req.body.ProductID]],
-    function (error, results, fields) {
-      if (error)
-        res.send(
-          "Deletion error. Please retry or contact sysadmin. Here's the error:\n" +
-            error
-        );
-      else
-        res.send(
-          JSON.stringify({ status: 200, error: null, response: results })
-        );
-    }
-  );
+router.delete("/api/storeProducts/delete", function(req,res){
+	global.connection.query('DELETE FROM Stores_has_Products WHERE Stores_StoreID= ? AND Products_ProductID= ?', [[req.body.StoreID], [req.body.ProductID]], function(error, results, fields) {
+		if(error) res.send("Deletion error. Please retry or contact sysadmin. Here's the error:\n"+error);
+		else res.send(JSON.stringify({"status": 200, "error": null, "response": results}))
+	});
 });
 
-/* -------- QUERIES -------- */
+
+ /* -------- QUERIES -------- */
 
 //TODO: I think this doesn't work and I don't know why
 router.get("/api/store/products", function (req, res) {

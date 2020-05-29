@@ -124,25 +124,30 @@ def create_dummy_products(url):
         "ProductName": "'Bread'",
         "ProductDaysPerWidget": "3"
     }
-    # eggs= {
-    #     "UserID": "1",
-    #     "ProductID": "-2",
-    #     "ProductName": "'Eggs'",
-    #     "ProductDaysPerWidget": "12"
-    # }
-    # milk= {
-    #     "UserID": "1",
-    #     "ProductID": "-3",
-    #     "ProductName": "'Milk'",
-    #     "ProductDaysPerWidget": "8"
-    # }
+    eggs= {
+        "UserID": "1",
+        "ProductID": "-2",
+        "ProductName": "'Eggs'",
+        "ProductDaysPerWidget": "12"
+    }
+    milk= {
+        "UserID": "1",
+        "ProductID": "-3",
+        "ProductName": "'Milk'",
+        "ProductDaysPerWidget": "8"
+    }
     resp1= requests.put(url+"/products/new", json= bread)
-    resp2= requests.put(url+"/inventory/new", json= bread)
-    # resp2= requests.put(url+"/products/new", json= eggs)
-    # resp3= requests.put(url+"/products/new", json= milk)
+    resp1a= requests.put(url+"/inventory/new", json= bread)
+    resp2= requests.put(url+"/products/new", json= eggs)
+    resp2a= requests.put(url+"/inventory/new", json= eggs)
+    resp3= requests.put(url+"/products/new", json= milk)
+    resp3a= requests.put(url+"/inventory/new", json= milk)
     print("\t"+resp1.text)
+    print("\t"+resp1a.text)
     print("\t"+resp2.text)
-    # print("\t"+resp3.text)
+    print("\t"+resp2a.text)
+    print("\t"+resp3.text)
+    print("\t"+resp3a.text)
 
 def delete_dummy_products(url):
     bread= {
@@ -280,6 +285,16 @@ def where_is_this_sold(url):
     resp= requests.get(url+ "/products/store", json= data)
     print("\t"+resp.text)
 
+# def get_user_stores(url):
+#
+# def get_user_products(url):
+
+def test_shopping_list(url):
+    data= {
+        "UserID": "1",
+        "": "",
+    }
+
 def delete_test(url):
     data = {
         "UserID": "1"
@@ -346,6 +361,9 @@ def testSequence(url):
     get_inventory(url)
     where_is_this_sold(url)
     what_is_sold_here(url)
+
+    print("\nShopping List Test")
+
 
     print("\nDelete Test")
     delete_test(url)
