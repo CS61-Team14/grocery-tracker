@@ -17,6 +17,8 @@ var env = process.argv[2] || 'local'; //use localhost if enviroment not specifie
 var config = require('./config')[env]; //read credentials from config.js
 const passport = require('passport'); // For authentication
 
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
 // Database connection
 app.use(function(req, res, next){
 	global.connection = mysql.createConnection({
@@ -34,11 +36,23 @@ const initializePassport = require('./passport-config')
 
 const getUserByEmail = (email) => {
 	// TODO: Return user object with the given email
-
+	global.connection.query('SELECT * FROM Users WHERE  UserID= ?', function (error, results, fields) {
+		if(error) {
+			console.log(error);
+		}
+		else {
+			user = {id: results.UserID, username: results.UserName, email:email, password: results.UserPassword };
+			return user;
+		}
+	});
 	// return {id: 1, email:"email1@gmail.com", password:123456};
 }
 const getUserByID = (id) => {
 	// TODO: Return user object with given id
+	global.connection.query('SELECT UserID, UserName, UserEmail FROM Users WHERE UserID= ?', [req.body.TgtUser], function(error, results, fields) {
+		if(error) res.send("Get error. Please retry or contact sysadmin. Here's the error:\n"+error);
+		else res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+	});
 
 	// return {id: 1, email:"email1@gmail.com", password:123456};
 }
@@ -69,7 +83,7 @@ router.get("/api", function(req,res){
 });
 
 // Temporary route for testing passport authentication
-router.post("/api", passport.authenticate('local'), function(req,res){
+router.post("/api", passport.authenticate('local', { session: false }), function(req,res){
 	console.log("Authentication succesful. User is:");
 	// req.user is the authenticated user object
 	console.log(req.user);
@@ -91,10 +105,14 @@ router.get("/api/products", function(req,res){
 // POST - receive new user registration data
 //TODO: must include password authentication/storage system
 //TODO: how to use server to assign UserID?
+
 router.put("/api/users/new", function(req,res){
-	global.connection.query('INSERT INTO Users VALUES (?)', [[req.body.UserID, req.body.UserName, req.body.UserEmail, req.body.UserPassword]],function (error, results, fields) {
-		if(error) res.send("Insertion error. Please retry or contact sysadmin. Here's the error:\n"+error);
-		else res.send(JSON.stringify({"status": 201, "error": null, "response": results})); //TODO: does this need to be modified?
+	const plain_password = req.body.UserPassword;
+    bcrypt.hash(plain_password, saltRounds, function (err, hash) {
+		global.connection.query('INSERT INTO Users (UserName, UserEmail, UserPassword) VALUES (?)', [[req.body.UserName, req.body.UserEmail, hash]],function (error, results, fields) {
+			if(error) res.send("Insertion error. Please retry or contact sysadmin. Here's the error:\n"+error+"\nreq.body.UserID= "+req.body.UserID);
+			else res.send(results); //TODO: does this need to be modified?
+		});
 	});
 });
 
@@ -208,7 +226,7 @@ router.put("/api/stores/newUser", function(req,res){
 	});
 });
 
-router.post("/api/stores/update/address", function(req,res){
+router.post("/api/stores/update", function(req,res){
 	global.connection.query('UPDATE Stores SET StoreStreetNum= ?, StoreStreet= ?, StoreCity= ?, StoreZIP= ? WHERE StoreID= ?', [req.body.StoreStreetNum, req.body.StoreStreet, req.body.StoreCity, req.body.StoreZIP, req.body.StoreID], function(error, results, fields){
 		if(error) res.send("Update error. Please retry or contact sysadmin. Here's the error:\n"+error);
 		else res.send(JSON.stringify({"status": 200, "error": null, "response": results}));

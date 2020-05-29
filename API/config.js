@@ -6,7 +6,7 @@ var config = {
 			password : '38Q?cRxfq4', //'your sunapee password here'
 			schema : 'GroceryTracker_sp20' //'your sunapee default schema'
 		},
-		port: 3306
+		port: 3307
 	},
 	local: {
 		database: {
