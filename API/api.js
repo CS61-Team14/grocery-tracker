@@ -487,7 +487,9 @@ router.get("/api/products/store", function (req, res) {
 });
 
 router.get("/api/shoppingList", passport.authenticate("jwt", { session: false }), function (req, res) {
-  if ("StoreID" in req.body) {
+  console.log("Query Parameter is: "+ req.query.storeID);
+  if (req.query.storeID != "all") {
+    console.log("Single store");
     global.connection.query(
       "SELECT ProductID, ProductName, StoreName FROM Inventory LEFT JOIN Products ON Inventory.Products_ProductID= Products.ProductID LEFT JOIN Stores_has_Products ON Products.ProductID= Stores_has_Products.Products_ProductID LEFT JOIN Stores ON Stores_has_Products.Stores_StoreID= Stores.StoreID WHERE Users_UserID= ? AND StoreID= ? AND InventoryRemainingDays < 7",
       [req.body.UserID, req.body.StoreID],
@@ -504,10 +506,10 @@ router.get("/api/shoppingList", passport.authenticate("jwt", { session: false })
       }
     );
   } else {
-    //TODO: there's a security hole here where the user might be able to see stores they don't have access to. It will be fixed by including a reference to Users_has_Stores
+    console.log("All Stores");
     global.connection.query(
-      "SELECT ProductID, ProductName, StoreName FROM Inventory LEFT JOIN Products ON Inventory.Products_ProductID= Products.ProductID LEFT JOIN Stores_has_Products ON Products.ProductID= Stores_has_Products.Products_ProductID LEFT JOIN Stores ON Stores_has_Products.Stores_StoreID= Stores.StoreID WHERE Users_UserID= ? AND InventoryRemainingDays < 7",
-      [req.body.UserID],
+      "SELECT StoreID, StoreName, ProductName, InventoryRemainingDays FROM Products l JOIN Inventory r ON l.ProductID = r.Products_ProductID JOIN Stores_has_Products on Stores_has_Products.Products_ProductID = ProductID JOIN Stores on Stores.StoreID = Stores_StoreID where Users_UserID = ? and InventoryRemainingDays < 7 ORDER BY StoreName",
+      [req.user.UserID],
       function (error, results, fields) {
         if (error)
           res.send(
@@ -521,27 +523,7 @@ router.get("/api/shoppingList", passport.authenticate("jwt", { session: false })
       }
     );
   }
-  //TODO: view the shopping list
-  //TODO: if you pass a JSON object, it will return the shopping list only for the desired stores
 });
-
-// // GET - read data from database, return status code 200 if successful
-// router.get("/api/restaurants",function(req,res){
-// 	// get all restaurants (limited to first 10 here), return status code 200
-// 	global.connection.query('SELECT * FROM nyc_inspections.Restaurants LIMIT 10', function (error, results, fields) {
-// 		if (error) throw error;
-// 		res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
-// 	});
-// });
-
-// router.get("/api/users/:id",function(req,res){
-// 	console.log(req.params.id);
-// 	//read a single restaurant with RestauantID = req.params.id (the :id in the url above), return status code 200 if successful, 404 if not
-// 	global.connection.query('SELECT UserID, UserName, UserEmail FROM Users WHERE UserID = ?', [req.params.id],function (error, results, fields) {
-// 		if (error) throw error;
-// 		res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
-// 	});
-// });
 
 // start server running on port 3306 (or whatever is set in env)
 app.use(express.static(__dirname + "/"));
